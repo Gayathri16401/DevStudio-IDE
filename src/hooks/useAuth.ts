@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/integrations/supabase/client'
 
+console.log('useAuth.ts loaded');
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
@@ -10,6 +12,13 @@ export function useAuth() {
   useEffect(() => {
     console.log('useAuth effect running')
     console.log('Supabase client exists:', !!supabase)
+    
+    // Safety check
+    if (!supabase) {
+      console.error('Supabase client is not initialized!');
+      setLoading(false);
+      return;
+    }
     
     const initAuth = async () => {
       try {
