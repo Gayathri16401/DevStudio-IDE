@@ -11,7 +11,12 @@ const Index = () => {
   const { user, loading, signOut } = useAuth();
   const [mode, setMode] = useState<"normal" | "hard">("hard");
 
-  console.log('Index state:', { user: !!user, loading, mode })
+  console.log('Index state:', { 
+    user: !!user, 
+    loading, 
+    mode,
+    userEmail: user?.email 
+  })
 
   const handleModeSelect = (selectedMode: "normal" | "hard") => {
     console.log('mode selected:', selectedMode)
