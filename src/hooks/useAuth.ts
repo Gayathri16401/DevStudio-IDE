@@ -9,17 +9,20 @@ export function useAuth() {
 
   useEffect(() => {
     console.log('useAuth effect running')
+    console.log('Supabase client exists:', !!supabase)
     
     const initAuth = async () => {
       try {
         console.log('initializing auth')
+        console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL)
+        console.log('Has Supabase Key:', !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY)
         
         // Get initial session
         const { data: { session }, error } = await supabase.auth.getSession()
         if (error) {
           console.error('Error getting session:', error)
         } else {
-          console.log('got session:', !!session)
+          console.log('got session:', !!session, session)
           setSession(session)
           setUser(session?.user ?? null)
         }
