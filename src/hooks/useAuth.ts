@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { User, Session } from '@supabase/supabase-js'
-import { getSupabase } from '@/lib/supabase'
-const supabase = getSupabase()
+import { supabase } from '@/integrations/supabase/client'
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
@@ -13,8 +12,7 @@ export function useAuth() {
     
     const initAuth = async () => {
       try {
-        const supabase = getSupabase()
-        console.log('got supabase client in useAuth')
+        console.log('initializing auth')
         
         // Get initial session
         const { data: { session }, error } = await supabase.auth.getSession()
@@ -36,7 +34,6 @@ export function useAuth() {
 
     // Listen for auth changes
     try {
-      const supabase = getSupabase()
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -56,7 +53,6 @@ export function useAuth() {
   const signUp = async (email: string, password: string) => {
     try {
       console.log('attempting sign up')
-      const supabase = getSupabase()
       const { error } = await supabase.auth.signUp({
         email,
         password
@@ -71,7 +67,6 @@ export function useAuth() {
   const signIn = async (email: string, password: string) => {
     try {
       console.log('attempting sign in')
-      const supabase = getSupabase()
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -86,7 +81,6 @@ export function useAuth() {
   const signOut = async () => {
     try {
       console.log('attempting sign out')
-      const supabase = getSupabase()
       const { error } = await supabase.auth.signOut()
       if (error) throw error
     } catch (error) {
