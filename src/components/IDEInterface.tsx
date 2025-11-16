@@ -20,7 +20,6 @@ import {
 import CodeEditor from "./CodeEditor";
 import ChatTab from "./ChatTab";
 import EncryptionTab from "./EncryptionTab";
-import SettingsDialog from "./SettingsDialog";
 
 interface IDEInterfaceProps {
   user: string;
@@ -29,7 +28,6 @@ interface IDEInterfaceProps {
 
 const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
   const [activeTab, setActiveTab] = useState("main.js");
-  const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col">
@@ -73,7 +71,7 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
           Stop
         </Button>
         <div className="h-4 w-px bg-slate-600 mx-2" />
-        <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white" onClick={() => setSettingsOpen(true)}>
+        <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
           <Settings className="w-4 h-4 mr-1" />
           Settings
         </Button>
@@ -169,7 +167,6 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
           <span>DevStudio v2.1.0</span>
         </div>
       </div>
-      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   );
 };
