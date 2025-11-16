@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock, Unlock, Copy, Key, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import CryptoJS from "crypto-js";
 
 const EncryptionTab = () => {
   const [message, setMessage] = useState("");
@@ -16,31 +17,42 @@ const EncryptionTab = () => {
   const [encryptInput, setEncryptInput] = useState("");
   const { toast } = useToast();
 
-  // Simple XOR encryption for demonstration
+  /**
+   * AES Encryption using CryptoJS
+   * Algorithm: AES (Advanced Encryption Standard)
+   * Mode: CBC (Cipher Block Chaining) - CryptoJS default
+   * Padding: PKCS7 - CryptoJS default
+   * Key Derivation: OpenSSL-compatible (EVP_BytesToKey) with MD5 hashing
+   * Output Format: Base64 encoded string
+   */
   const encrypt = (text: string, secretKey: string) => {
     if (!secretKey) return text;
-    let result = '';
-    for (let i = 0; i < text.length; i++) {
-      result += String.fromCharCode(
-        text.charCodeAt(i) ^ secretKey.charCodeAt(i % secretKey.length)
-      );
+    try {
+      const res = CryptoJS.AES.encrypt(text, secretKey).toString();
+      return res;
+    } catch (error) {
+      console.error("Encryption error:", error);
+      return text;
     }
-    return btoa(result); // Base64 encode
   };
 
+  /**
+   * AES Decryption using CryptoJS
+   * Decrypts the Base64 encoded ciphertext using the same secret key
+   */
   const decrypt = (encryptedText: string, secretKey: string) => {
     if (!secretKey) return encryptedText;
     try {
-      const decoded = atob(encryptedText); // Base64 decode
-      let result = '';
-      for (let i = 0; i < decoded.length; i++) {
-        result += String.fromCharCode(
-          decoded.charCodeAt(i) ^ secretKey.charCodeAt(i % secretKey.length)
-        );
+      const bytes = CryptoJS.AES.decrypt(encryptedText, secretKey);
+      const res = bytes.toString(CryptoJS.enc.Utf8);
+      
+      if (!res) {
+        return "Invalid encrypted message or wrong key";
       }
-      return result;
-    } catch {
-      return "Invalid encrypted message";
+      return res;
+    } catch (error) {
+      console.error("Decryption error:", error);
+      return "Invalid encrypted message or wrong key";
     }
   };
 
@@ -140,7 +152,7 @@ const EncryptionTab = () => {
               />
             </div>
             
-            <Button 
+            <Button
               onClick={handleEncrypt}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
@@ -191,7 +203,7 @@ const EncryptionTab = () => {
               />
             </div>
             
-            <Button 
+            <Button
               onClick={handleDecrypt}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
