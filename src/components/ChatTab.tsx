@@ -184,12 +184,12 @@ const ChatTab = ({ user }: ChatTabProps) => {
 
   return (
     <>
-      <UsernameDialog 
-        open={showUsernameDialog} 
+      <UsernameDialog
+        open={showUsernameDialog}
         onComplete={(newUsername) => {
           setUsername(newUsername);
           setShowUsernameDialog(false);
-        }} 
+        }}
       />
       
       <ClearConsoleDialog
@@ -199,62 +199,83 @@ const ChatTab = ({ user }: ChatTabProps) => {
         onClearForEveryone={handleClearForEveryone}
       />
       
-      <div className="h-full flex flex-col bg-slate-900">
-        <div className="flex items-center justify-between p-2 border-b border-slate-700">
-          <div className="flex items-center">
-            <Terminal className="w-4 h-4 mr-2 text-green-400" />
-            <span className="text-sm font-medium text-slate-300">Console Output</span>
+      <div className="h-full flex flex-col bg-black relative overflow-hidden">
+        {/* Terminal Header - looks like VS Code terminal */}
+        <div className="relative flex items-center justify-between px-3 py-1.5 bg-[#1e1e1e] border-b border-[#2d2d2d]">
+          <div className="flex items-center space-x-2">
+            <Terminal className="w-3.5 h-3.5 text-gray-500" />
+            <span className="text-xs text-gray-400 font-mono">bash</span>
+            <span className="text-xs text-gray-600">•</span>
+            <span className="text-xs text-gray-500 font-mono">node v18.17.0</span>
           </div>
           <Button
             onClick={() => setShowClearDialog(true)}
             size="sm"
             variant="ghost"
-            className="text-slate-400 hover:text-red-400 hover:bg-slate-800"
+            className="text-gray-500 hover:text-gray-300 hover:bg-[#2d2d2d] h-6 px-2 transition-colors"
           >
-            <Trash2 className="w-4 h-4 mr-1" />
-            Clear
+            <Trash2 className="w-3 h-3" />
           </Button>
         </div>
       
-      <ScrollArea className="flex-1 p-4">
-        {loading ? (
-          <div className="text-slate-400 text-sm font-mono">Loading messages...</div>
-        ) : logs.length === 0 ? (
-          <div className="text-slate-400 text-sm font-mono">No messages yet. Start chatting!</div>
-        ) : (
-          <div className="space-y-1 font-mono text-sm">
-            {logs.map((log) => (
-              <div key={log.id} className="flex">
-                <span className="text-slate-500 mr-3">
-                  {formatTime(log.created_at)}
-                </span>
-                <span className={getLogColor(log.message_type)}>
-                  {log.message_type === 'message' ? `[USER:${log.username}]` : ''} {log.content}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </ScrollArea>
+        {/* Terminal Console Area - authentic terminal look */}
+        <ScrollArea className="flex-1 p-3 bg-black">
+          {loading ? (
+            <div className="text-gray-500 text-xs font-mono">
+              <span className="text-green-400">✓</span> Loading workspace...
+            </div>
+          ) : logs.length === 0 ? (
+            <div className="text-gray-600 text-xs font-mono space-y-1">
+              <div><span className="text-blue-400">info</span> Development server running at http://localhost:5173</div>
+              <div><span className="text-green-400">ready</span> Compiled successfully in 234ms</div>
+              <div className="text-gray-700 mt-2">Waiting for file changes...</div>
+            </div>
+          ) : (
+            <div className="space-y-0 font-mono text-xs leading-relaxed">
+              {logs.map((log) => (
+                <div key={log.id}>
+                  {log.message_type === 'message' ? (
+                    <>
+                      <div className="text-gray-600">
+                        <span className="text-gray-700">[{formatTime(log.created_at)}]</span>
+                        <span className="text-blue-400 ml-2">DEBUG</span>
+                        <span className="text-gray-500 ml-2">@{log.username}</span>
+                      </div>
+                      <div className="text-gray-300 break-words mb-3">
+                        {log.content}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-green-400 break-words">
+                      <span className="text-gray-600">›</span> {log.content}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </ScrollArea>
       
-      <div className="border-t border-slate-700 p-3">
-        <form onSubmit={handleSend} className="flex space-x-2">
-          <span className="text-green-400 text-sm font-mono flex items-center">$</span>
-          <Input
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Enter command or message..."
-            className="flex-1 bg-slate-800 border-slate-600 text-slate-100 font-mono text-sm"
-          />
-          <Button 
-            type="submit" 
-            size="sm"
-            className="bg-slate-700 hover:bg-slate-600 text-slate-200"
-          >
-            <Send className="w-4 h-4" />
-          </Button>
-        </form>
-      </div>
+        {/* Terminal Input Area - command prompt style */}
+        <div className="border-t border-[#2d2d2d] p-2 bg-[#1e1e1e]">
+          <form onSubmit={handleSend} className="flex items-center space-x-2">
+            <span className="text-green-400 font-mono text-sm font-bold select-none">❯</span>
+            <Input
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="npm run dev"
+              className="flex-1 bg-black border-none text-gray-300 font-mono text-xs h-7 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-700 px-2"
+            />
+            <Button
+              type="submit"
+              size="sm"
+              disabled={!newMessage.trim()}
+              className="bg-[#2d2d2d] hover:bg-[#3d3d3d] text-gray-400 hover:text-gray-300 h-7 px-3 disabled:opacity-30 text-xs font-mono border-none transition-colors"
+            >
+              <Send className="w-3 h-3" />
+            </Button>
+          </form>
+        </div>
       </div>
     </>
   );
