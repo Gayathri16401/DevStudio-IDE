@@ -206,7 +206,7 @@ const ChatTab = ({ user }: ChatTabProps) => {
         onClearForEveryone={handleClearForEveryone}
       />
       
-      <div className="h-full flex flex-col bg-black relative overflow-hidden">
+      <div className="h-full flex flex-col bg-black relative">
         {/* Terminal Header - looks like VS Code terminal */}
         <div className="relative flex items-center justify-between px-3 py-1.5 bg-[#1e1e1e] border-b border-[#2d2d2d]">
           <div className="flex items-center space-x-2">
@@ -226,7 +226,7 @@ const ChatTab = ({ user }: ChatTabProps) => {
         </div>
       
         {/* Terminal Console Area - authentic terminal look */}
-        <ScrollArea className="flex-1 p-3 bg-black">
+        <div className="p-3 bg-black overflow-y-auto terminal-scrollbar" style={{ height: 'calc(100vh - 235px)' }}>
           {loading ? (
             <div className="text-gray-500 text-xs font-mono">
               <span className="text-green-400">✓</span> Loading workspace...
@@ -275,10 +275,10 @@ const ChatTab = ({ user }: ChatTabProps) => {
               ))}
             </div>
           )}
-        </ScrollArea>
+        </div>
       
         {/* Terminal Input Area - command prompt style */}
-        <div className="border-t border-[#2d2d2d] p-2 bg-[#1e1e1e]">
+        <div className="border-t border-[#2d2d2d] p-1 bg-[#1e1e1e]">
           <form onSubmit={handleSend} className="flex items-center space-x-2">
             <span className="text-green-400 font-mono text-sm font-bold select-none">❯</span>
             <Input
