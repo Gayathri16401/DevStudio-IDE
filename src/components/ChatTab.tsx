@@ -1,9 +1,11 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Terminal } from "lucide-react";
+import { Send, Terminal, Trash2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface ChatTabProps {
   user: string;
@@ -11,98 +13,156 @@ interface ChatTabProps {
 
 interface LogEntry {
   id: string;
-  type: 'system' | 'user' | 'message';
-  user?: string;
+  username: string;
   content: string;
-  timestamp: Date;
+  message_type: string;
+  created_at: string;
 }
 
 const ChatTab = ({ user }: ChatTabProps) => {
-  const [logs, setLogs] = useState<LogEntry[]>([
-    {
-      id: "1",
-      type: "system",
-      content: "[INFO] Application started successfully",
-      timestamp: new Date(),
-    },
-    {
-      id: "2",
-      type: "system",
-      content: "[DEBUG] Database connection established",
-      timestamp: new Date(),
-    },
-    {
-      id: "3",
-      type: "system",
-      content: "[INFO] Server listening on port 3000",
-      timestamp: new Date(),
-    },
-  ]);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const { user: authUser } = useAuth();
 
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newMessage.trim()) {
-      const entry: LogEntry = {
-        id: Date.now().toString(),
-        type: "message",
-        user,
-        content: newMessage.trim(),
-        timestamp: new Date(),
-      };
-      setLogs(prev => [...prev, entry]);
-      setNewMessage("");
-      
-      // Simulate system response
-      setTimeout(() => {
-        const response: LogEntry = {
-          id: (Date.now() + 1).toString(),
-          type: "system",
-          content: `[INFO] Message processed: "${newMessage.trim()}"`,
-          timestamp: new Date(),
-        };
-        setLogs(prev => [...prev, response]);
-      }, 1000);
+  // Load messages on mount
+  useEffect(() => {
+    loadMessages();
+  }, []);
+
+  // Subscribe to real-time updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('console_messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'console_messages'
+        },
+        (payload) => {
+          setLogs(prev => [...prev, payload.new as LogEntry]);
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'console_messages'
+        },
+        () => {
+          loadMessages(); // Reload all messages when any is deleted
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const loadMessages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('console_messages')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setLogs(data || []);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+      toast.error('Failed to load messages');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const formatTime = (date: Date) => {
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newMessage.trim() && authUser) {
+      try {
+        const { error } = await supabase
+          .from('console_messages')
+          .insert({
+            user_id: authUser.id,
+            username: user,
+            content: newMessage.trim(),
+            message_type: 'message'
+          });
+
+        if (error) throw error;
+        setNewMessage("");
+      } catch (error) {
+        console.error('Error sending message:', error);
+        toast.error('Failed to send message');
+      }
+    }
+  };
+
+  const handleClearConsole = async () => {
+    try {
+      const { error } = await supabase
+        .from('console_messages')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+
+      if (error) throw error;
+      toast.success('Console cleared');
+    } catch (error) {
+      console.error('Error clearing console:', error);
+      toast.error('Failed to clear console');
+    }
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
 
   const getLogColor = (type: string) => {
-    switch (type) {
-      case 'system':
-        return 'text-green-400';
-      case 'user':
-        return 'text-blue-400';
-      case 'message':
-        return 'text-yellow-400';
-      default:
-        return 'text-slate-300';
-    }
+    return type === 'system' ? 'text-green-400' : 'text-yellow-400';
   };
 
   return (
     <div className="h-full flex flex-col bg-slate-900">
-      <div className="flex items-center p-2 border-b border-slate-700">
-        <Terminal className="w-4 h-4 mr-2 text-green-400" />
-        <span className="text-sm font-medium text-slate-300">Console Output</span>
+      <div className="flex items-center justify-between p-2 border-b border-slate-700">
+        <div className="flex items-center">
+          <Terminal className="w-4 h-4 mr-2 text-green-400" />
+          <span className="text-sm font-medium text-slate-300">Console Output</span>
+        </div>
+        <Button
+          onClick={handleClearConsole}
+          size="sm"
+          variant="ghost"
+          className="text-slate-400 hover:text-red-400 hover:bg-slate-800"
+        >
+          <Trash2 className="w-4 h-4 mr-1" />
+          Clear
+        </Button>
       </div>
       
       <ScrollArea className="flex-1 p-4">
-        <div className="space-y-1 font-mono text-sm">
-          {logs.map((log) => (
-            <div key={log.id} className="flex">
-              <span className="text-slate-500 mr-3">
-                {formatTime(log.timestamp)}
-              </span>
-              <span className={getLogColor(log.type)}>
-                {log.type === 'message' ? `[USER:${log.user}]` : ''} {log.content}
-              </span>
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-slate-400 text-sm font-mono">Loading messages...</div>
+        ) : logs.length === 0 ? (
+          <div className="text-slate-400 text-sm font-mono">No messages yet. Start chatting!</div>
+        ) : (
+          <div className="space-y-1 font-mono text-sm">
+            {logs.map((log) => (
+              <div key={log.id} className="flex">
+                <span className="text-slate-500 mr-3">
+                  {formatTime(log.created_at)}
+                </span>
+                <span className={getLogColor(log.message_type)}>
+                  {log.message_type === 'message' ? `[USER:${log.username}]` : ''} {log.content}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </ScrollArea>
       
       <div className="border-t border-slate-700 p-3">
