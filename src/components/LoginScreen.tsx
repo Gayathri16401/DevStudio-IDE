@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { MessageCircle, Code2, Mail, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import SettingsDialog from "@/components/SettingsDialog";
 
 interface LoginScreenProps {
   onModeSelect: (mode: "normal" | "hard") => void;
@@ -155,7 +154,6 @@ const LoginScreen = ({ onModeSelect }: LoginScreenProps) => {
           </form>
         </CardContent>
       </Card>
-      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   );
 };
