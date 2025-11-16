@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Terminal, Trash2 } from "lucide-react";
+import { Send, Terminal, Trash2, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -28,6 +28,7 @@ const ChatTab = ({ user }: ChatTabProps) => {
   const [username, setUsername] = useState<string | null>(null);
   const [showUsernameDialog, setShowUsernameDialog] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const { user: authUser } = useAuth();
 
   // Load username on mount
@@ -182,6 +183,12 @@ const ChatTab = ({ user }: ChatTabProps) => {
     return type === 'system' ? 'text-green-400' : 'text-yellow-400';
   };
 
+  const copyMessage = (content: string, messageId: string) => {
+    navigator.clipboard.writeText(content);
+    setCopiedMessageId(messageId);
+    setTimeout(() => setCopiedMessageId(null), 2000);
+  };
+
   return (
     <>
       <UsernameDialog
@@ -235,16 +242,30 @@ const ChatTab = ({ user }: ChatTabProps) => {
               {logs.map((log) => (
                 <div key={log.id}>
                   {log.message_type === 'message' ? (
-                    <>
-                      <div className="text-gray-600">
-                        <span className="text-gray-700">[{formatTime(log.created_at)}]</span>
-                        <span className="text-blue-400 ml-2">DEBUG</span>
-                        <span className="text-gray-500 ml-2">@{log.username}</span>
+                    <div className="group">
+                      <div className="flex items-center justify-between">
+                        <div className="text-gray-600">
+                          <span className="text-gray-700">[{formatTime(log.created_at)}]</span>
+                          <span className="text-blue-400 ml-2">DEBUG</span>
+                          <span className="text-gray-500 ml-2">@{log.username}</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => copyMessage(log.content, log.id)}
+                          className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-gray-300 hover:bg-[#2d2d2d] h-5 w-5 p-0 transition-opacity"
+                        >
+                          {copiedMessageId === log.id ? (
+                            <span className="text-[9px]">✓</span>
+                          ) : (
+                            <Copy className="w-2.5 h-2.5" />
+                          )}
+                        </Button>
                       </div>
-                      <div className="text-gray-300 break-words mb-3">
+                      <div className="text-gray-300 break-all overflow-wrap-anywhere mb-3">
                         {log.content}
                       </div>
-                    </>
+                    </div>
                   ) : (
                     <div className="text-green-400 break-words">
                       <span className="text-gray-600">›</span> {log.content}
