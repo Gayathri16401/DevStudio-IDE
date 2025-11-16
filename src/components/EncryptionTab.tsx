@@ -12,6 +12,8 @@ const EncryptionTab = () => {
   const [output, setOutput] = useState("");
   const [errorMessage, setErrorMessage] = useState("COMP_EMSG");
   const [copiedOutput, setCopiedOutput] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
+  const [outputFocused, setOutputFocused] = useState(false);
 
   /**
    * AES Encryption using CryptoJS
@@ -99,8 +101,12 @@ const EncryptionTab = () => {
               <Textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setInputFocused(false)}
                 placeholder="Enter data to encrypt..."
-                className="bg-slate-700 border-slate-600 text-slate-100 flex-1 text-xs resize-none"
+                className={`bg-slate-700 border-slate-600 text-slate-100 flex-1 text-xs resize-none transition-all ${
+                  !inputFocused && message ? 'blur-sm' : ''
+                }`}
               />
             </div>
             <div className="space-y-2">
@@ -142,8 +148,12 @@ const EncryptionTab = () => {
               <Textarea
                 value={output}
                 readOnly
+                onFocus={() => setOutputFocused(true)}
+                onBlur={() => setOutputFocused(false)}
                 placeholder=""
-                className="bg-slate-700 border-slate-600 text-green-400 font-mono text-[11px] flex-1 resize-none"
+                className={`bg-slate-700 border-slate-600 text-green-400 font-mono text-[11px] flex-1 resize-none transition-all ${
+                  !outputFocused && output ? 'blur-sm' : ''
+                }`}
               />
             </div>
             <div className="space-y-2">
