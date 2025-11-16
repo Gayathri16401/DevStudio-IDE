@@ -6,6 +6,8 @@ import { Send, Terminal, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { UsernameDialog } from "./UsernameDialog";
+import { ClearConsoleDialog } from "./ClearConsoleDialog";
 
 interface ChatTabProps {
   user: string;
@@ -23,7 +25,17 @@ const ChatTab = ({ user }: ChatTabProps) => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState<string | null>(null);
+  const [showUsernameDialog, setShowUsernameDialog] = useState(false);
+  const [showClearDialog, setShowClearDialog] = useState(false);
   const { user: authUser } = useAuth();
+
+  // Load username on mount
+  useEffect(() => {
+    if (authUser) {
+      loadUsername();
+    }
+  }, [authUser]);
 
   // Load messages on mount
   useEffect(() => {
@@ -63,6 +75,31 @@ const ChatTab = ({ user }: ChatTabProps) => {
     };
   }, []);
 
+  const loadUsername = async () => {
+    if (!authUser) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('user_id', authUser.id)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No profile found, show username dialog
+          setShowUsernameDialog(true);
+        } else {
+          throw error;
+        }
+      } else if (data) {
+        setUsername(data.username);
+      }
+    } catch (error) {
+      console.error('Error loading username:', error);
+    }
+  };
+
   const loadMessages = async () => {
     try {
       const { data, error } = await supabase
@@ -82,13 +119,13 @@ const ChatTab = ({ user }: ChatTabProps) => {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage.trim() && authUser) {
+    if (newMessage.trim() && authUser && username) {
       try {
         const { error } = await supabase
           .from('console_messages')
           .insert({
             user_id: authUser.id,
-            username: user,
+            username: username,
             content: newMessage.trim(),
             message_type: 'message'
           });
@@ -102,7 +139,25 @@ const ChatTab = ({ user }: ChatTabProps) => {
     }
   };
 
-  const handleClearConsole = async () => {
+  const handleClearForMe = async () => {
+    if (!authUser) return;
+    
+    try {
+      const { error } = await supabase
+        .from('console_messages')
+        .delete()
+        .eq('user_id', authUser.id);
+
+      if (error) throw error;
+      toast.success('Your messages cleared');
+      setShowClearDialog(false);
+    } catch (error) {
+      console.error('Error clearing messages:', error);
+      toast.error('Failed to clear messages');
+    }
+  };
+
+  const handleClearForEveryone = async () => {
     try {
       const { error } = await supabase
         .from('console_messages')
@@ -110,7 +165,8 @@ const ChatTab = ({ user }: ChatTabProps) => {
         .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
 
       if (error) throw error;
-      toast.success('Console cleared');
+      toast.success('Console cleared for everyone');
+      setShowClearDialog(false);
     } catch (error) {
       console.error('Error clearing console:', error);
       toast.error('Failed to clear console');
@@ -127,22 +183,38 @@ const ChatTab = ({ user }: ChatTabProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-slate-900">
-      <div className="flex items-center justify-between p-2 border-b border-slate-700">
-        <div className="flex items-center">
-          <Terminal className="w-4 h-4 mr-2 text-green-400" />
-          <span className="text-sm font-medium text-slate-300">Console Output</span>
+    <>
+      <UsernameDialog 
+        open={showUsernameDialog} 
+        onComplete={(newUsername) => {
+          setUsername(newUsername);
+          setShowUsernameDialog(false);
+        }} 
+      />
+      
+      <ClearConsoleDialog
+        open={showClearDialog}
+        onOpenChange={setShowClearDialog}
+        onClearForMe={handleClearForMe}
+        onClearForEveryone={handleClearForEveryone}
+      />
+      
+      <div className="h-full flex flex-col bg-slate-900">
+        <div className="flex items-center justify-between p-2 border-b border-slate-700">
+          <div className="flex items-center">
+            <Terminal className="w-4 h-4 mr-2 text-green-400" />
+            <span className="text-sm font-medium text-slate-300">Console Output</span>
+          </div>
+          <Button
+            onClick={() => setShowClearDialog(true)}
+            size="sm"
+            variant="ghost"
+            className="text-slate-400 hover:text-red-400 hover:bg-slate-800"
+          >
+            <Trash2 className="w-4 h-4 mr-1" />
+            Clear
+          </Button>
         </div>
-        <Button
-          onClick={handleClearConsole}
-          size="sm"
-          variant="ghost"
-          className="text-slate-400 hover:text-red-400 hover:bg-slate-800"
-        >
-          <Trash2 className="w-4 h-4 mr-1" />
-          Clear
-        </Button>
-      </div>
       
       <ScrollArea className="flex-1 p-4">
         {loading ? (
@@ -183,7 +255,8 @@ const ChatTab = ({ user }: ChatTabProps) => {
           </Button>
         </form>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
