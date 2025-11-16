@@ -1,73 +1,69 @@
-# Welcome to your Lovable project
+# DevStudio IDE - Secure Encrypted Communication
 
-## Project info
+A professional IDE-styled interface for secure, encrypted real-time communication. Disguised as a development environment for privacy.
 
-**URL**: https://lovable.dev/projects/55fe299e-2080-4d14-8e23-3fbfd7042a43
+## 🚀 Features
 
-## How can I edit this code?
+- **🔒 End-to-End Encryption**: AES encryption for all messages
+- **💬 Real-time Chat**: Instant messaging with Supabase real-time subscriptions
+- **🎭 Stealth Mode**: Disguised as a professional IDE (DevStudio)
+- **🔐 Encryption Tools**: Built-in encryption/decryption interface
+- **👤 User Authentication**: Secure login system
+- **📱 Responsive Design**: Works on desktop and mobile
+- **🎨 Professional UI**: Clean, modern interface resembling VS Code
 
-There are several ways of editing your application.
+## 🛠️ Technologies Used
 
-**Use Lovable**
+- **Frontend**: React 18 + TypeScript
+- **Build Tool**: Vite
+- **UI Framework**: shadcn/ui + Tailwind CSS
+- **Backend**: Supabase (Authentication + Real-time Database)
+- **Encryption**: CryptoJS (AES-256)
+- **Icons**: Lucide React
+- **Routing**: React Router DOM
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/55fe299e-2080-4d14-8e23-3fbfd7042a43) and start prompting.
+## 📋 Prerequisites
 
-Changes made via Lovable will be committed automatically to this repo.
+- Node.js 18+ and npm
+- Supabase account and project
 
-**Use your preferred IDE**
+## 🔧 Installation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Gayathri16401/devstudio-ide.git
+   cd devstudio-ide
+   ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-Follow these steps:
+3. **Set up environment variables**
+   
+   Create a `.env` file in the root directory:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+   The app will be available at `http://localhost:8080`
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 🗄️ Database Setup
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Run the SQL migrations in your Supabase project:
 
-**Edit a file directly in GitHub**
+1. Go to Supabase Dashboard → SQL Editor
+2. Run the migrations from `supabase/migrations/` folder
+3. Enable Row Level Security (RLS) policies
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 👤 Author
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/55fe299e-2080-4d14-8e23-3fbfd7042a43) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+**Gayathri Saravanan**
+- GitHub: [@Gayathri16401](https://github.com/Gayathri16401)
