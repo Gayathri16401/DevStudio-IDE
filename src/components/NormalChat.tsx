@@ -7,7 +7,6 @@ import { LogOut, Send, User, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { UsernameDialog } from "./UsernameDialog";
 import { ClearConsoleDialog } from "./ClearConsoleDialog";
 
 interface NormalChatProps {
@@ -28,7 +27,6 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string | null>(null);
-  const [showUsernameDialog, setShowUsernameDialog] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
   const { user: authUser } = useAuth();
 
@@ -86,16 +84,6 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
         .select('username')
         .eq('user_id', authUser.id)
         .single();
-
-      if (error) {
-        if (error.code === 'PGRST116') {
-          setShowUsernameDialog(true);
-        } else {
-          throw error;
-        }
-      } else if (data) {
-        setUsername(data.username);
-      }
     } catch (error) {
       console.error('Error loading username:', error);
     }
@@ -180,15 +168,7 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
   };
 
   return (
-    <>
-      <UsernameDialog 
-        open={showUsernameDialog} 
-        onComplete={(newUsername) => {
-          setUsername(newUsername);
-          setShowUsernameDialog(false);
-        }} 
-      />
-      
+    <>      
       <ClearConsoleDialog
         open={showClearDialog}
         onOpenChange={setShowClearDialog}
