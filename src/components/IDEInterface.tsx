@@ -1,14 +1,14 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  LogOut, 
-  File, 
-  Folder, 
-  Play, 
-  Square, 
-  Settings, 
+import {
+  LogOut,
+  File,
+  Folder,
+  Play,
+  Square,
+  Settings,
   Terminal,
   MessageSquare,
   Lock,
@@ -20,6 +20,8 @@ import {
 import CodeEditor from "./CodeEditor";
 import ChatTab from "./ChatTab";
 import EncryptionTab from "./EncryptionTab";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 interface IDEInterfaceProps {
   user: string;
@@ -28,6 +30,35 @@ interface IDEInterfaceProps {
 
 const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
   const [activeTab, setActiveTab] = useState("main.js");
+  const [username, setUsername] = useState<string | null>(null);
+  const { user: authUser } = useAuth();
+
+  // Load username on mount
+  useEffect(() => {
+    if (authUser) {
+      loadUsername();
+    }
+  }, [authUser]);
+
+  const loadUsername = async () => {
+    if (!authUser) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('user_id', authUser.id)
+        .single();
+
+      if (error) {
+        console.error('Error loading username:', error);
+      } else if (data) {
+        setUsername(data.username);
+      }
+    } catch (error) {
+      console.error('Error loading username:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col">
@@ -48,7 +79,7 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-slate-400">User: {user}</span>
+          <span className="text-sm text-slate-400">User: {username || user}</span>
           <Button
             variant="ghost"
             size="sm"
