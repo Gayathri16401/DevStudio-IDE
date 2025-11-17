@@ -7,7 +7,7 @@ import { LogOut, Send, User, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { ClearConsoleDialog } from "./ClearConsoleDialog";
+import { ClearMessagesDialog } from "./ClearMessagesDialog";
 
 interface NormalChatProps {
   user: string;
@@ -84,6 +84,12 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
         .select('username')
         .eq('user_id', authUser.id)
         .single();
+
+      if (error) {
+        console.error('Error loading username:', error);
+      } else if (data) {
+        setUsername(data.username);
+      }
     } catch (error) {
       console.error('Error loading username:', error);
     }
@@ -154,11 +160,11 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
         .neq('id', '00000000-0000-0000-0000-000000000000');
 
       if (error) throw error;
-      toast.success('Console cleared for everyone');
+      toast.success('Messages cleared for everyone');
       setShowClearDialog(false);
     } catch (error) {
-      console.error('Error clearing console:', error);
-      toast.error('Failed to clear console');
+      console.error('Error clearing messages:', error);
+      toast.error('Failed to clear messages');
     }
   };
 
@@ -168,8 +174,8 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
   };
 
   return (
-    <>      
-      <ClearConsoleDialog
+    <>
+      <ClearMessagesDialog
         open={showClearDialog}
         onOpenChange={setShowClearDialog}
         onClearForMe={handleClearForMe}
