@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Terminal, Trash2, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -14,6 +13,7 @@ interface ChatTabProps {
 
 interface LogEntry {
   id: string;
+  user_id: string;
   username: string;
   content: string;
   message_type: string;
@@ -148,6 +148,10 @@ const ChatTab = ({ user }: ChatTabProps) => {
         .eq('chat_type', 'console');
 
       if (error) throw error;
+      
+      // Immediately update local state by filtering out user's messages
+      setLogs(prev => prev.filter(log => log.user_id !== authUser.id));
+      
       toast.success('Your messages cleared');
       setShowClearDialog(false);
     } catch (error) {
@@ -165,6 +169,10 @@ const ChatTab = ({ user }: ChatTabProps) => {
         .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
 
       if (error) throw error;
+      
+      // Immediately clear all local messages
+      setLogs([]);
+      
       toast.success('Console cleared for everyone');
       setShowClearDialog(false);
     } catch (error) {

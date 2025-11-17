@@ -16,6 +16,7 @@ interface NormalChatProps {
 
 interface Message {
   id: string;
+  user_id: string;
   username: string;
   content: string;
   message_type: string;
@@ -149,6 +150,10 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
         .eq('chat_type', 'normal');
 
       if (error) throw error;
+      
+      // Immediately update local state by filtering out user's messages
+      setMessages(prev => prev.filter(msg => msg.user_id !== authUser.id));
+      
       toast.success('Your messages cleared');
       setShowClearDialog(false);
     } catch (error) {
@@ -166,6 +171,10 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
         .neq('id', '00000000-0000-0000-0000-000000000000');
 
       if (error) throw error;
+      
+      // Immediately clear all local messages
+      setMessages([]);
+      
       toast.success('Messages cleared for everyone');
       setShowClearDialog(false);
     } catch (error) {
