@@ -50,7 +50,8 @@ const ChatTab = ({ user }: ChatTabProps) => {
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'console_messages'
+          table: 'console_messages',
+          filter: 'chat_type=eq.console'
         },
         (payload) => {
           setLogs(prev => [...prev, payload.new as LogEntry]);
@@ -61,7 +62,8 @@ const ChatTab = ({ user }: ChatTabProps) => {
         {
           event: 'DELETE',
           schema: 'public',
-          table: 'console_messages'
+          table: 'console_messages',
+          filter: 'chat_type=eq.console'
         },
         () => {
           loadMessages(); // Reload all messages when any is deleted
@@ -99,6 +101,7 @@ const ChatTab = ({ user }: ChatTabProps) => {
       const { data, error } = await supabase
         .from('console_messages')
         .select('*')
+        .eq('chat_type', 'console')
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -121,7 +124,8 @@ const ChatTab = ({ user }: ChatTabProps) => {
             user_id: authUser.id,
             username: username,
             content: newMessage.trim(),
-            message_type: 'message'
+            message_type: 'message',
+            chat_type: 'console'
           });
 
         if (error) throw error;
@@ -140,7 +144,8 @@ const ChatTab = ({ user }: ChatTabProps) => {
       const { error } = await supabase
         .from('console_messages')
         .delete()
-        .eq('user_id', authUser.id);
+        .eq('user_id', authUser.id)
+        .eq('chat_type', 'console');
 
       if (error) throw error;
       toast.success('Your messages cleared');
@@ -156,6 +161,7 @@ const ChatTab = ({ user }: ChatTabProps) => {
       const { error } = await supabase
         .from('console_messages')
         .delete()
+        .eq('chat_type', 'console')
         .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
 
       if (error) throw error;
