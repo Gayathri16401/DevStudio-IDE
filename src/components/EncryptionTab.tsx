@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -8,12 +8,24 @@ import CryptoJS from "crypto-js";
 
 const EncryptionTab = () => {
   const [message, setMessage] = useState("");
-  const [key, setKey] = useState("");
+  const [key, setKey] = useState(() => {
+    // Load key from localStorage on initial render
+    return localStorage.getItem("encryption_key") || "";
+  });
   const [output, setOutput] = useState("");
   const [errorMessage, setErrorMessage] = useState("COMP_EMSG");
   const [copiedOutput, setCopiedOutput] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
   const [outputFocused, setOutputFocused] = useState(false);
+
+  // Save key to localStorage whenever it changes
+  useEffect(() => {
+    if (key) {
+      localStorage.setItem("encryption_key", key);
+    } else {
+      localStorage.removeItem("encryption_key");
+    }
+  }, [key]);
 
   /**
    * AES Encryption using CryptoJS
