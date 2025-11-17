@@ -65,11 +65,11 @@ module.exports = app;`);
     <div className="h-full flex flex-col bg-slate-900">
       <div className="flex items-center justify-between p-2 border-b border-slate-700">
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-200 hover:bg-slate-700">
             <Save className="w-4 h-4 mr-1" />
             Save
           </Button>
-          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-200 hover:bg-slate-700">
             <Play className="w-4 h-4 mr-1" />
             Run
           </Button>

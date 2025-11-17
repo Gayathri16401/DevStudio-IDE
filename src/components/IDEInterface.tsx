@@ -62,16 +62,16 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
 
       {/* Toolbar */}
       <div className="bg-slate-800 border-b border-slate-700 px-4 py-1 flex items-center space-x-2">
-        <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+        <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-200 hover:bg-slate-700">
           <Play className="w-4 h-4 mr-1" />
           Run
         </Button>
-        <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+        <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-200 hover:bg-slate-700">
           <Square className="w-4 h-4 mr-1" />
           Stop
         </Button>
         <div className="h-4 w-px bg-slate-600 mx-2" />
-        <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+        <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-200 hover:bg-slate-700">
           <Settings className="w-4 h-4 mr-1" />
           Settings
         </Button>
