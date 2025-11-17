@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       console_messages: {
         Row: {
+          chat_type: string
           content: string
           created_at: string
           id: string
@@ -24,6 +25,7 @@ export type Database = {
           username: string
         }
         Insert: {
+          chat_type?: string
           content: string
           created_at?: string
           id?: string
@@ -32,6 +34,7 @@ export type Database = {
           username: string
         }
         Update: {
+          chat_type?: string
           content?: string
           created_at?: string
           id?: string

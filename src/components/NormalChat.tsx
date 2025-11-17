@@ -51,7 +51,8 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'console_messages'
+          table: 'console_messages',
+          filter: 'chat_type=eq.normal'
         },
         (payload) => {
           setMessages(prev => [...prev, payload.new as Message]);
@@ -62,7 +63,8 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
         {
           event: 'DELETE',
           schema: 'public',
-          table: 'console_messages'
+          table: 'console_messages',
+          filter: 'chat_type=eq.normal'
         },
         () => {
           loadMessages();
@@ -100,6 +102,7 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
       const { data, error } = await supabase
         .from('console_messages')
         .select('*')
+        .eq('chat_type', 'normal')
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -122,7 +125,8 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
             user_id: authUser.id,
             username: username,
             content: newMessage.trim(),
-            message_type: 'message'
+            message_type: 'message',
+            chat_type: 'normal'
           });
 
         if (error) throw error;
@@ -141,7 +145,8 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
       const { error } = await supabase
         .from('console_messages')
         .delete()
-        .eq('user_id', authUser.id);
+        .eq('user_id', authUser.id)
+        .eq('chat_type', 'normal');
 
       if (error) throw error;
       toast.success('Your messages cleared');
@@ -157,6 +162,7 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
       const { error } = await supabase
         .from('console_messages')
         .delete()
+        .eq('chat_type', 'normal')
         .neq('id', '00000000-0000-0000-0000-000000000000');
 
       if (error) throw error;
