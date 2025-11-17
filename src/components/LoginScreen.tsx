@@ -4,9 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { MessageCircle, Code2, Mail, Lock } from "lucide-react";
+import { MessageCircle, Code2, Mail, Lock, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LoginScreenProps {
   onModeSelect: (mode: "normal" | "hard") => void;
@@ -17,10 +18,10 @@ const LoginScreen = ({ onModeSelect }: LoginScreenProps) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const { signUp, signIn } = useAuth();
   const { toast } = useToast();
-  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,10 +34,43 @@ const LoginScreen = ({ onModeSelect }: LoginScreenProps) => {
       return;
     }
 
+    if (isSignUp && !username.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter a username.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       if (isSignUp) {
-        await signUp(email, password);
+        const { data, error } = await signUp(email, password);
+        if (error) throw error;
+        
+        // Create profile with username
+        if (data.user) {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              user_id: data.user.id,
+              username: username.trim()
+            });
+          
+          if (profileError) {
+            if (profileError.code === '23505') {
+              toast({
+                title: "Username Taken",
+                description: "This username is already taken. Please choose another.",
+                variant: "destructive",
+              });
+              return;
+            }
+            throw profileError;
+          }
+        }
+        
         toast({
           title: "Account Created",
           description: "Please check your email for verification.",
@@ -111,6 +145,25 @@ const LoginScreen = ({ onModeSelect }: LoginScreenProps) => {
                 />
               </div>
             </div>
+
+            {isSignUp && (
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-slate-200">Username</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="username"
+                    type="text"
+                    placeholder="Choose a username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="pl-10 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                    maxLength={20}
+                    required={isSignUp}
+                  />
+                </div>
+              </div>
+            )}
             
             <div className="space-y-2">
               <Label htmlFor="password" className="text-slate-200">Password</Label>
@@ -148,9 +201,6 @@ const LoginScreen = ({ onModeSelect }: LoginScreenProps) => {
               </Button>
             </div>
             
-            <div className="text-center">
-              <Button variant="ghost" size="sm" onClick={() => setSettingsOpen(true)}>Configure connection</Button>
-            </div>
           </form>
         </CardContent>
       </Card>

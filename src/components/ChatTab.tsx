@@ -6,7 +6,6 @@ import { Send, Terminal, Trash2, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { UsernameDialog } from "./UsernameDialog";
 import { ClearConsoleDialog } from "./ClearConsoleDialog";
 
 interface ChatTabProps {
@@ -26,7 +25,6 @@ const ChatTab = ({ user }: ChatTabProps) => {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string | null>(null);
-  const [showUsernameDialog, setShowUsernameDialog] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const { user: authUser } = useAuth();
@@ -87,12 +85,7 @@ const ChatTab = ({ user }: ChatTabProps) => {
         .single();
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          // No profile found, show username dialog
-          setShowUsernameDialog(true);
-        } else {
-          throw error;
-        }
+        console.error('Error loading username:', error);
       } else if (data) {
         setUsername(data.username);
       }
@@ -191,14 +184,6 @@ const ChatTab = ({ user }: ChatTabProps) => {
 
   return (
     <>
-      <UsernameDialog
-        open={showUsernameDialog}
-        onComplete={(newUsername) => {
-          setUsername(newUsername);
-          setShowUsernameDialog(false);
-        }}
-      />
-      
       <ClearConsoleDialog
         open={showClearDialog}
         onOpenChange={setShowClearDialog}

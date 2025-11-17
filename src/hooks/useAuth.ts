@@ -65,11 +65,12 @@ export function useAuth() {
   const signUp = async (email: string, password: string) => {
     try {
       console.log('attempting sign up')
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password
       })
       if (error) throw error
+      return { data, error }
     } catch (error) {
       console.error('Sign up error:', error)
       throw error
