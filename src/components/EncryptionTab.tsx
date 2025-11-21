@@ -1,31 +1,43 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock, Unlock, Copy, Shield } from "lucide-react";
+import { Lock, Unlock, Copy, Shield, AlertTriangle, Eye, EyeOff } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import CryptoJS from "crypto-js";
 
 const EncryptionTab = () => {
   const [message, setMessage] = useState("");
-  const [key, setKey] = useState(() => {
-    // Load key from localStorage on initial render
-    return localStorage.getItem("encryption_key") || "";
-  });
+  const [key, setKey] = useState(""); // Session-only storage - no persistence
   const [output, setOutput] = useState("");
   const [errorMessage, setErrorMessage] = useState("COMP_EMSG");
   const [copiedOutput, setCopiedOutput] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
   const [outputFocused, setOutputFocused] = useState(false);
+  const [showKey, setShowKey] = useState(false);
+  const [keyStrength, setKeyStrength] = useState<"weak" | "medium" | "strong" | null>(null);
 
-  // Save key to localStorage whenever it changes
-  useEffect(() => {
-    if (key) {
-      localStorage.setItem("encryption_key", key);
-    } else {
-      localStorage.removeItem("encryption_key");
+  // Validate key strength
+  const validateKeyStrength = (keyValue: string) => {
+    if (!keyValue) {
+      setKeyStrength(null);
+      return;
     }
-  }, [key]);
+    
+    if (keyValue.length < 8) {
+      setKeyStrength("weak");
+    } else if (keyValue.length < 16 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(keyValue)) {
+      setKeyStrength("medium");
+    } else {
+      setKeyStrength("strong");
+    }
+  };
+
+  const handleKeyChange = (value: string) => {
+    setKey(value);
+    validateKeyStrength(value);
+  };
 
   /**
    * AES Encryption using CryptoJS
@@ -65,6 +77,10 @@ const EncryptionTab = () => {
       setErrorMessage("Error: Missing data or key");
       return;
     }
+    if (keyStrength === "weak") {
+      setErrorMessage("Warning: Weak key detected - use stronger key");
+      return;
+    }
     const encrypted = encrypt(message, key);
     setOutput(encrypted);
     setErrorMessage("COMP_EMSG");
@@ -73,6 +89,10 @@ const EncryptionTab = () => {
   const handleDecrypt = () => {
     if (!message || !key) {
       setErrorMessage("Error: Missing data or key");
+      return;
+    }
+    if (keyStrength === "weak") {
+      setErrorMessage("Warning: Weak key detected - use stronger key");
       return;
     }
     const { result, error } = decrypt(message, key);
@@ -91,6 +111,32 @@ const EncryptionTab = () => {
     setErrorMessage("COMP_EMSG");
   };
 
+  const handleClearAll = () => {
+    setMessage("");
+    setKey("");
+    setOutput("");
+    setErrorMessage("COMP_EMSG");
+    setKeyStrength(null);
+  };
+
+  const getKeyStrengthColor = () => {
+    switch (keyStrength) {
+      case "weak": return "text-red-400";
+      case "medium": return "text-yellow-400";
+      case "strong": return "text-green-400";
+      default: return "text-slate-400";
+    }
+  };
+
+  const getKeyStrengthText = () => {
+    switch (keyStrength) {
+      case "weak": return "Weak (use 8+ chars, mixed case, numbers)";
+      case "medium": return "Medium (add special characters for better security)";
+      case "strong": return "Strong";
+      default: return "Enter encryption key";
+    }
+  };
+
   const copyOutput = () => {
     navigator.clipboard.writeText(output);
     setCopiedOutput(true);
@@ -99,10 +145,19 @@ const EncryptionTab = () => {
 
   return (
     <div className="h-full bg-slate-900 p-6 overflow-auto flex flex-col">
-      <div className="flex items-center space-x-2 mb-6">
+      <div className="flex items-center space-x-2 mb-4">
         <Shield className="w-4 h-4 text-blue-400" />
         <h2 className="text-sm font-semibold text-slate-100">Data Processing Tools</h2>
       </div>
+
+      {/* Security Warning */}
+      <Alert className="mb-4 bg-amber-900/20 border-amber-600/30">
+        <AlertTriangle className="h-4 w-4 text-amber-500" />
+        <AlertDescription className="text-amber-200 text-xs">
+          <strong>Security Notice:</strong> Keys are stored in memory only and will be cleared when you refresh the page.
+          Use strong passwords (16+ characters, mixed case, numbers, symbols).
+        </AlertDescription>
+      </Alert>
 
       {/* Main Layout: Input | Output */}
       <div className="flex-1 grid grid-cols-2 gap-6">
@@ -122,24 +177,46 @@ const EncryptionTab = () => {
               />
             </div>
             <div className="space-y-2">
-              <Input
-                type="password"
-                value={key}
-                onChange={(e) => setKey(e.target.value)}
-                placeholder="••••••••••••••••••••••••••••••••••••••••••••••••••••"
-                className="bg-slate-700 border-slate-600 text-slate-100 h-10 text-xs font-mono"
-              />
+              <div className="flex items-center justify-between">
+                <span className={`text-xs ${getKeyStrengthColor()}`}>
+                  {getKeyStrengthText()}
+                </span>
+              </div>
+              <div className="relative">
+                <Input
+                  type={showKey ? "text" : "password"}
+                  value={key}
+                  onChange={(e) => handleKeyChange(e.target.value)}
+                  placeholder="Enter a strong encryption key (16+ characters recommended)"
+                  className={`bg-slate-700 border-slate-600 text-slate-100 h-10 text-xs font-mono pr-10 ${
+                    keyStrength === "weak" ? "border-red-500" :
+                    keyStrength === "medium" ? "border-yellow-500" :
+                    keyStrength === "strong" ? "border-green-500" : ""
+                  }`}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowKey(!showKey)}
+                  className="absolute right-1 top-1 h-8 w-8 p-0 text-slate-400 hover:text-slate-200"
+                >
+                  {showKey ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                </Button>
+              </div>
             </div>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               <Button
                 onClick={handleEncrypt}
-                className="bg-blue-600 hover:bg-blue-700 text-white h-8 text-xs w-full"
+                disabled={!key || !message || keyStrength === "weak"}
+                className="bg-blue-600 hover:bg-blue-700 text-white h-8 text-xs w-full disabled:opacity-50"
               >
                 ENC
               </Button>
               <Button
                 onClick={handleDecrypt}
-                className="bg-blue-600 hover:bg-blue-700 text-white h-8 text-xs w-full"
+                disabled={!key || !message || keyStrength === "weak"}
+                className="bg-blue-600 hover:bg-blue-700 text-white h-8 text-xs w-full disabled:opacity-50"
               >
                 DEC
               </Button>
@@ -149,6 +226,13 @@ const EncryptionTab = () => {
                 className="bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600 h-8 text-xs w-full"
               >
                 CLR
+              </Button>
+              <Button
+                onClick={handleClearAll}
+                variant="outline"
+                className="bg-red-700 hover:bg-red-600 text-red-200 border-red-600 h-8 text-xs w-full"
+              >
+                ALL
               </Button>
             </div>
           </div>
