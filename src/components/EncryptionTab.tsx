@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock, Unlock, Copy, Shield, AlertTriangle, Eye, EyeOff } from "lucide-react";
+import { Lock, Unlock, Copy, Shield, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import CryptoJS from "crypto-js";
 
@@ -15,7 +15,6 @@ const EncryptionTab = () => {
   const [copiedOutput, setCopiedOutput] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
   const [outputFocused, setOutputFocused] = useState(false);
-  const [showKey, setShowKey] = useState(false);
   const [keyStrength, setKeyStrength] = useState<"weak" | "medium" | "strong" | null>(null);
 
   // Validate key strength
@@ -182,28 +181,17 @@ const EncryptionTab = () => {
                   {getKeyStrengthText()}
                 </span>
               </div>
-              <div className="relative">
-                <Input
-                  type={showKey ? "text" : "password"}
-                  value={key}
-                  onChange={(e) => handleKeyChange(e.target.value)}
-                  placeholder="Enter a strong encryption key (16+ characters recommended)"
-                  className={`bg-slate-700 border-slate-600 text-slate-100 h-10 text-xs font-mono pr-10 ${
-                    keyStrength === "weak" ? "border-red-500" :
-                    keyStrength === "medium" ? "border-yellow-500" :
-                    keyStrength === "strong" ? "border-green-500" : ""
-                  }`}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowKey(!showKey)}
-                  className="absolute right-1 top-1 h-8 w-8 p-0 text-slate-400 hover:text-slate-200"
-                >
-                  {showKey ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                </Button>
-              </div>
+              <Input
+                type="password"
+                value={key}
+                onChange={(e) => handleKeyChange(e.target.value)}
+                placeholder="Enter a strong encryption key (16+ characters recommended)"
+                className={`bg-slate-700 border-slate-600 text-slate-100 h-10 text-xs font-mono ${
+                  keyStrength === "weak" ? "border-red-500" :
+                  keyStrength === "medium" ? "border-yellow-500" :
+                  keyStrength === "strong" ? "border-green-500" : ""
+                }`}
+              />
             </div>
             <div className="grid grid-cols-4 gap-2">
               <Button
