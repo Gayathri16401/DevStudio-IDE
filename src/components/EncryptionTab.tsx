@@ -198,6 +198,7 @@ const EncryptionTab = () => {
               <Input
                 type="password"
                 value={key}
+                placeholder="SK"
                 onChange={(e) => handleKeyChange(e.target.value)}
                 className={`bg-slate-700 border-slate-600 text-slate-100 h-8 sm:h-10 text-[10px] sm:text-xs font-mono ${
                   keyStrength === "weak" ? "border-red-500" :

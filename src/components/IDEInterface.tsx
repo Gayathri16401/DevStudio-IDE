@@ -180,8 +180,10 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
               <TabsContent value="chat" className="h-full m-0">
                 <ChatTab user={user} />
               </TabsContent>
-              <TabsContent value="encryption" className="h-full m-0">
-                <EncryptionTab />
+              <TabsContent value="encryption" className="h-full m-0" forceMount>
+                <div className={activeTab === "encryption" ? "h-full" : "hidden"}>
+                  <EncryptionTab />
+                </div>
               </TabsContent>
             </div>
           </Tabs>
