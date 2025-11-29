@@ -264,7 +264,10 @@ const EncryptionTab = () => {
             </div>
             <div className="grid grid-cols-3 gap-1 sm:gap-2">
               <div className="flex items-center justify-center gap-1 bg-slate-700 border border-slate-600 rounded px-2 py-1 h-7 sm:h-8">
-                <Label className="text-slate-300 text-[10px] sm:text-xs whitespace-nowrap">RST Timer (0-60 mins)</Label>
+                <Label className="text-slate-300 text-[10px] sm:text-xs whitespace-nowrap">
+                  <span className="sm:hidden">RST</span>
+                  <span className="hidden sm:inline">RST Timer (0-60 mins)</span>
+                </Label>
                 <input
                   type="number"
                   min="0"
