@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Terminal, Trash2, Copy } from "lucide-react";
@@ -9,6 +9,7 @@ import { ClearConsoleDialog } from "./ClearConsoleDialog";
 
 interface ChatTabProps {
   user: string;
+  isActive?: boolean;
 }
 
 interface LogEntry {
@@ -20,7 +21,7 @@ interface LogEntry {
   created_at: string;
 }
 
-const ChatTab = ({ user }: ChatTabProps) => {
+const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,7 @@ const ChatTab = ({ user }: ChatTabProps) => {
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const { user: authUser } = useAuth();
+  const consoleRef = useRef<HTMLDivElement>(null);
 
   // Load username on mount
   useEffect(() => {
@@ -75,6 +77,29 @@ const ChatTab = ({ user }: ChatTabProps) => {
       supabase.removeChannel(channel);
     };
   }, []);
+
+  // Auto-scroll to bottom when new messages arrive or tab becomes active
+  useEffect(() => {
+    if (isActive && logs.length > 0) {
+      // Use requestAnimationFrame for better timing
+      requestAnimationFrame(() => {
+        if (consoleRef.current) {
+          consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+        }
+      });
+    }
+  }, [logs, isActive]);
+
+  // Scroll to bottom when tab becomes active
+  useEffect(() => {
+    if (isActive && consoleRef.current && logs.length > 0) {
+      requestAnimationFrame(() => {
+        if (consoleRef.current) {
+          consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+        }
+      });
+    }
+  }, [isActive]);
 
   const loadUsername = async () => {
     if (!authUser) return;
@@ -249,7 +274,7 @@ const ChatTab = ({ user }: ChatTabProps) => {
         </div>
       
         {/* Terminal Console Area - authentic terminal look */}
-        <div className="p-2 sm:p-3 bg-black overflow-y-auto terminal-scrollbar" style={{ height: 'calc(100vh - 200px)' }}>
+        <div ref={consoleRef} className="p-2 sm:p-3 bg-black overflow-y-auto terminal-scrollbar" style={{ height: 'calc(100vh - 200px)' }}>
           {loading ? (
             <div className="text-gray-500 text-[10px] sm:text-xs font-mono">
               <span className="text-green-400">✓</span> Loading workspace...

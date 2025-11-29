@@ -178,7 +178,7 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
                 <CodeEditor />
               </TabsContent>
               <TabsContent value="chat" className="h-full m-0">
-                <ChatTab user={user} />
+                <ChatTab user={user} isActive={activeTab === "chat"} />
               </TabsContent>
               <TabsContent value="encryption" className="h-full m-0" forceMount>
                 <div className={activeTab === "encryption" ? "h-full" : "hidden"}>

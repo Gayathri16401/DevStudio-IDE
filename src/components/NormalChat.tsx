@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,6 +30,7 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
   const [username, setUsername] = useState<string | null>(null);
   const [showClearDialog, setShowClearDialog] = useState(false);
   const { user: authUser } = useAuth();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Load username on mount
   useEffect(() => {
@@ -77,6 +78,16 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
       supabase.removeChannel(channel);
     };
   }, []);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (viewport) {
+        viewport.scrollTop = viewport.scrollHeight;
+      }
+    }
+  }, [messages]);
 
   const loadUsername = async () => {
     if (!authUser) return;
@@ -253,7 +264,7 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
             </CardHeader>
           
             <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
-              <ScrollArea className="flex-1 p-3 sm:p-6">
+              <ScrollArea className="flex-1 p-3 sm:p-6" ref={scrollAreaRef}>
                 {loading ? (
                   <div className="text-gray-500 text-xs sm:text-sm">Loading messages...</div>
                 ) : messages.length === 0 ? (
