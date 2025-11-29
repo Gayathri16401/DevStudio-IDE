@@ -231,37 +231,37 @@ const ChatTab = ({ user }: ChatTabProps) => {
       
       <div className="h-full flex flex-col bg-black relative">
         {/* Terminal Header - looks like VS Code terminal */}
-        <div className="relative flex items-center justify-between px-3 py-1.5 bg-[#1e1e1e] border-b border-[#2d2d2d]">
-          <div className="flex items-center space-x-2">
-            <Terminal className="w-3.5 h-3.5 text-gray-500" />
-            <span className="text-xs text-gray-400 font-mono">bash</span>
-            <span className="text-xs text-gray-600">•</span>
-            <span className="text-xs text-gray-500 font-mono">node v18.17.0</span>
+        <div className="relative flex items-center justify-between px-2 sm:px-3 py-1.5 bg-[#1e1e1e] border-b border-[#2d2d2d]">
+          <div className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto">
+            <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-500 flex-shrink-0" />
+            <span className="text-[10px] sm:text-xs text-gray-400 font-mono whitespace-nowrap">bash</span>
+            <span className="text-[10px] sm:text-xs text-gray-600 hidden sm:inline">•</span>
+            <span className="text-[10px] sm:text-xs text-gray-500 font-mono whitespace-nowrap hidden sm:inline">node v18.17.0</span>
           </div>
           <Button
             onClick={() => setShowClearDialog(true)}
             size="sm"
             variant="ghost"
-            className="text-gray-500 hover:text-gray-300 hover:bg-[#2d2d2d] h-6 px-2 transition-colors"
+            className="text-gray-500 hover:text-gray-300 hover:bg-[#2d2d2d] h-5 sm:h-6 px-1 sm:px-2 transition-colors flex-shrink-0"
           >
-            <Trash2 className="w-3 h-3" />
+            <Trash2 className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
           </Button>
         </div>
       
         {/* Terminal Console Area - authentic terminal look */}
-        <div className="p-3 bg-black overflow-y-auto terminal-scrollbar" style={{ height: 'calc(100vh - 235px)' }}>
+        <div className="p-2 sm:p-3 bg-black overflow-y-auto terminal-scrollbar" style={{ height: 'calc(100vh - 200px)' }}>
           {loading ? (
-            <div className="text-gray-500 text-xs font-mono">
+            <div className="text-gray-500 text-[10px] sm:text-xs font-mono">
               <span className="text-green-400">✓</span> Loading workspace...
             </div>
           ) : logs.length === 0 ? (
-            <div className="text-gray-600 text-xs font-mono space-y-1">
-              <div><span className="text-blue-400">info</span> Development server running at http://localhost:5173</div>
-              <div><span className="text-green-400">ready</span> Compiled successfully in 234ms</div>
+            <div className="text-gray-600 text-[10px] sm:text-xs font-mono space-y-1">
+              <div><span className="text-blue-400">info</span> Development server running</div>
+              <div><span className="text-green-400">ready</span> Compiled successfully</div>
               <div className="text-gray-700 mt-2">Waiting for file changes...</div>
             </div>
           ) : (
-            <div className="space-y-0 font-mono text-xs leading-relaxed">
+            <div className="space-y-0 font-mono text-[10px] sm:text-xs leading-relaxed">
               {logs.map((log) => {
                 const isCurrentUser = authUser && log.user_id === authUser.id;
                 return (
@@ -298,7 +298,7 @@ const ChatTab = ({ user }: ChatTabProps) => {
                         </div>
                       </div>
                     ) : (
-                      <div className="text-green-400 break-words">
+                      <div className="text-green-400 break-words text-[10px] sm:text-xs">
                         <span className="text-gray-600">›</span> {log.content}
                       </div>
                     )}
@@ -311,21 +311,21 @@ const ChatTab = ({ user }: ChatTabProps) => {
       
         {/* Terminal Input Area - command prompt style */}
         <div className="border-t border-[#2d2d2d] p-1 bg-[#1e1e1e]">
-          <form onSubmit={handleSend} className="flex items-center space-x-2">
-            <span className="text-green-400 font-mono text-sm font-bold select-none">❯</span>
+          <form onSubmit={handleSend} className="flex items-center space-x-1 sm:space-x-2">
+            <span className="text-green-400 font-mono text-xs sm:text-sm font-bold select-none">❯</span>
             <Input
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="npm run dev"
-              className="flex-1 bg-black border-none text-gray-300 font-mono text-xs h-7 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-700 px-2"
+              className="flex-1 bg-black border-none text-gray-300 font-mono text-[10px] sm:text-xs h-6 sm:h-7 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-700 px-1 sm:px-2"
             />
             <Button
               type="submit"
               size="sm"
               disabled={!newMessage.trim()}
-              className="bg-[#2d2d2d] hover:bg-[#3d3d3d] text-gray-400 hover:text-gray-300 h-7 px-3 disabled:opacity-30 text-xs font-mono border-none transition-colors"
+              className="bg-[#2d2d2d] hover:bg-[#3d3d3d] text-gray-400 hover:text-gray-300 h-6 sm:h-7 px-2 sm:px-3 disabled:opacity-30 text-[10px] sm:text-xs font-mono border-none transition-colors"
             >
-              <Send className="w-3 h-3" />
+              <Send className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
             </Button>
           </form>
         </div>

@@ -143,41 +143,41 @@ const EncryptionTab = () => {
   };
 
   return (
-    <div className="h-full bg-slate-900 p-6 overflow-auto flex flex-col">
-      <div className="flex items-center space-x-2 mb-4">
-        <Shield className="w-4 h-4 text-blue-400" />
-        <h2 className="text-sm font-semibold text-slate-100">Data Processing Tools</h2>
+    <div className="h-full bg-slate-900 p-3 sm:p-6 overflow-auto flex flex-col">
+      <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+        <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" />
+        <h2 className="text-xs sm:text-sm font-semibold text-slate-100">Data Processing Tools</h2>
       </div>
 
       {/* Security Warning */}
-      <Alert className="mb-4 bg-amber-900/20 border-amber-600/30">
-        <AlertTriangle className="h-4 w-4 text-amber-500" />
-        <AlertDescription className="text-amber-200 text-xs">
+      <Alert className="mb-3 sm:mb-4 bg-amber-900/20 border-amber-600/30">
+        <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500" />
+        <AlertDescription className="text-amber-200 text-[10px] sm:text-xs">
           <strong>Security Notice:</strong> Keys are stored in memory only and will be cleared when you refresh the page.
           Use strong passwords (16+ characters, mixed case, numbers, symbols).
         </AlertDescription>
       </Alert>
 
       {/* Main Layout: Input | Output */}
-      <div className="flex-1 grid grid-cols-2 gap-6">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
           {/* Left: Input Section */}
-          <div className="flex flex-col h-full space-y-3">
+          <div className="flex flex-col h-full space-y-2 sm:space-y-3 min-h-[300px] lg:min-h-0">
             <div className="flex-1 flex flex-col space-y-2">
-              <Label className="text-slate-300 text-xs">Paste (or write) text content</Label>
+              <Label className="text-slate-300 text-[10px] sm:text-xs">Paste (or write) text content</Label>
               <Textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
                 placeholder="Enter data to encrypt..."
-                className={`bg-slate-700 border-slate-600 text-slate-100 flex-1 text-xs resize-none transition-all ${
+                className={`bg-slate-700 border-slate-600 text-slate-100 flex-1 text-[10px] sm:text-xs resize-none transition-all min-h-[120px] ${
                   !inputFocused && message ? 'blur-sm' : ''
                 }`}
               />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className={`text-xs ${getKeyStrengthColor()}`}>
+                <span className={`text-[10px] sm:text-xs ${getKeyStrengthColor()}`}>
                   {getKeyStrengthText()}
                 </span>
               </div>
@@ -185,40 +185,40 @@ const EncryptionTab = () => {
                 type="password"
                 value={key}
                 onChange={(e) => handleKeyChange(e.target.value)}
-                placeholder="Enter a strong encryption key (16+ characters recommended)"
-                className={`bg-slate-700 border-slate-600 text-slate-100 h-10 text-xs font-mono ${
+                placeholder="Enter encryption key (16+ chars)"
+                className={`bg-slate-700 border-slate-600 text-slate-100 h-8 sm:h-10 text-[10px] sm:text-xs font-mono ${
                   keyStrength === "weak" ? "border-red-500" :
                   keyStrength === "medium" ? "border-yellow-500" :
                   keyStrength === "strong" ? "border-green-500" : ""
                 }`}
               />
             </div>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-1 sm:gap-2">
               <Button
                 onClick={handleEncrypt}
                 disabled={!key || !message || keyStrength === "weak"}
-                className="bg-blue-600 hover:bg-blue-700 text-white h-8 text-xs w-full disabled:opacity-50"
+                className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full disabled:opacity-50"
               >
                 ENC
               </Button>
               <Button
                 onClick={handleDecrypt}
                 disabled={!key || !message || keyStrength === "weak"}
-                className="bg-blue-600 hover:bg-blue-700 text-white h-8 text-xs w-full disabled:opacity-50"
+                className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full disabled:opacity-50"
               >
                 DEC
               </Button>
               <Button
                 onClick={handleClear}
                 variant="outline"
-                className="bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600 h-8 text-xs w-full"
+                className="bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600 h-7 sm:h-8 text-[10px] sm:text-xs w-full"
               >
                 CLR
               </Button>
               <Button
                 onClick={handleClearAll}
                 variant="outline"
-                className="bg-red-700 hover:bg-red-600 text-red-200 border-red-600 h-8 text-xs w-full"
+                className="bg-red-700 hover:bg-red-600 text-red-200 border-red-600 h-7 sm:h-8 text-[10px] sm:text-xs w-full"
               >
                 ALL
               </Button>
@@ -226,16 +226,16 @@ const EncryptionTab = () => {
           </div>
 
           {/* Right: Output Section */}
-          <div className="flex flex-col h-full space-y-3">
+          <div className="flex flex-col h-full space-y-2 sm:space-y-3 min-h-[300px] lg:min-h-0">
             <div className="flex-1 flex flex-col space-y-2">
-              <Label className="text-slate-300 text-xs">Computational Result</Label>
+              <Label className="text-slate-300 text-[10px] sm:text-xs">Computational Result</Label>
               <Textarea
                 value={output}
                 readOnly
                 onFocus={() => setOutputFocused(true)}
                 onBlur={() => setOutputFocused(false)}
                 placeholder=""
-                className={`bg-slate-700 border-slate-600 text-green-400 font-mono text-[11px] flex-1 resize-none transition-all ${
+                className={`bg-slate-700 border-slate-600 text-green-400 font-mono text-[10px] sm:text-[11px] flex-1 resize-none transition-all min-h-[120px] ${
                   !outputFocused && output ? 'blur-sm' : ''
                 }`}
               />
@@ -244,24 +244,24 @@ const EncryptionTab = () => {
               <Input
                 value={errorMessage}
                 readOnly
-                className={`bg-slate-700 border-slate-600 h-10 text-xs font-mono ${
+                className={`bg-slate-700 border-slate-600 h-8 sm:h-10 text-[10px] sm:text-xs font-mono ${
                   errorMessage === "COMP_EMSG" ? "text-slate-400" : "text-red-400"
                 }`}
               />
             </div>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-1 sm:gap-2">
               <div></div>
               <Button
                 onClick={copyOutput}
                 disabled={!output}
-                className="bg-blue-600 hover:bg-blue-700 text-white h-8 text-xs w-full"
+                className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full"
               >
                 {copiedOutput ? 'COPIED!' : 'COPY'}
               </Button>
               <Button
                 onClick={() => setOutput("")}
                 disabled={!output}
-                className="bg-blue-600 hover:bg-blue-700 text-white h-8 text-xs w-full"
+                className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full"
               >
                 CLR
               </Button>
