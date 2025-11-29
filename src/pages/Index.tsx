@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoginScreen from "@/components/LoginScreen";
 import NormalChat from "@/components/NormalChat";
 import IDEInterface from "@/components/IDEInterface";
@@ -9,14 +9,24 @@ const Index = () => {
   console.log('Index component rendering')
   
   const { user, loading, signOut } = useAuth();
-  const [mode, setMode] = useState<"normal" | "hard">("hard");
+  
+  // Initialize mode from localStorage or default to "hard"
+  const [mode, setMode] = useState<"normal" | "hard">(() => {
+    const savedMode = localStorage.getItem('app_mode');
+    return (savedMode === 'normal' || savedMode === 'hard') ? savedMode : 'hard';
+  });
 
-  console.log('Index state:', { 
-    user: !!user, 
-    loading, 
+  console.log('Index state:', {
+    user: !!user,
+    loading,
     mode,
-    userEmail: user?.email 
+    userEmail: user?.email
   })
+
+  // Persist mode to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('app_mode', mode);
+  }, [mode]);
 
   const handleModeSelect = (selectedMode: "normal" | "hard") => {
     console.log('mode selected:', selectedMode)
@@ -26,7 +36,7 @@ const Index = () => {
   const handleLogout = async () => {
     console.log('logout clicked')
     await signOut();
-    setMode("hard");
+    // Don't reset mode on logout - keep user's preference
   };
 
   // Show loading while checking auth state
