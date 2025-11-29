@@ -79,7 +79,6 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-slate-400">User: {username || user}</span>
           <Button
             variant="ghost"
             size="sm"
@@ -87,6 +86,7 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
             className="text-slate-400 hover:text-white hover:bg-slate-700"
           >
             <LogOut className="w-4 h-4" />
+            Logout
           </Button>
         </div>
       </div>

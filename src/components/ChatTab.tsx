@@ -186,6 +186,30 @@ const ChatTab = ({ user }: ChatTabProps) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    // Check if it's today
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today';
+    }
+    
+    // Check if it's yesterday
+    if (date.toDateString() === yesterday.toDateString()) {
+      return 'Yesterday';
+    }
+    
+    // Otherwise return formatted date
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const formatDateTime = (dateString: string) => {
+    return `${formatDate(dateString)} ${formatTime(dateString)}`;
+  };
+
   const getLogColor = (type: string) => {
     return type === 'system' ? 'text-green-400' : 'text-yellow-400';
   };
@@ -244,7 +268,7 @@ const ChatTab = ({ user }: ChatTabProps) => {
                     <div className="group">
                       <div className="flex items-center justify-between">
                         <div className="text-gray-600">
-                          <span className="text-gray-700">[{formatTime(log.created_at)}]</span>
+                          <span className="text-gray-700">[{formatDateTime(log.created_at)}]</span>
                           <span className="text-blue-400 ml-2">DEBUG</span>
                           <span className="text-gray-500 ml-2">@{log.username}</span>
                         </div>
