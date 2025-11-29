@@ -185,7 +185,32 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const messageDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    // If message is from today, show only time
+    if (messageDate.getTime() === today.getTime()) {
+      return time;
+    }
+    // If message is from yesterday
+    else if (messageDate.getTime() === yesterday.getTime()) {
+      return `Yesterday ${time}`;
+    }
+    // If message is from this year, show date without year
+    else if (date.getFullYear() === now.getFullYear()) {
+      const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      return `${dateStr} ${time}`;
+    }
+    // If message is from a previous year, show full date
+    else {
+      const dateStr = date.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+      return `${dateStr} ${time}`;
+    }
   };
 
   return (
@@ -203,7 +228,7 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
             <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
               <CardTitle className="flex items-center space-x-2">
                 <User className="w-5 h-5" />
-                <span>SecureChat - Welcome, {username || user}</span>
+                <span>SecuChat - Welcome!</span>
               </CardTitle>
               <div className="flex items-center space-x-2">
                 <Button
