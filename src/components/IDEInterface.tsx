@@ -168,8 +168,8 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
                 className="data-[state=active]:bg-slate-700 data-[state=active]:text-white rounded-none px-2 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap"
               >
                 <Lock className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Security Tools</span>
-                <span className="sm:hidden">Security</span>
+                <span className="hidden sm:inline">Configurations</span>
+                <span className="sm:hidden">Config</span>
               </TabsTrigger>
             </TabsList>
 

@@ -144,20 +144,6 @@ const EncryptionTab = () => {
 
   return (
     <div className="h-full bg-slate-900 p-3 sm:p-6 overflow-auto flex flex-col">
-      <div className="flex items-center space-x-2 mb-3 sm:mb-4">
-        <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" />
-        <h2 className="text-xs sm:text-sm font-semibold text-slate-100">Data Processing Tools</h2>
-      </div>
-
-      {/* Security Warning */}
-      <Alert className="mb-3 sm:mb-4 bg-amber-900/20 border-amber-600/30">
-        <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500" />
-        <AlertDescription className="text-amber-200 text-[10px] sm:text-xs">
-          <strong>Security Notice:</strong> Keys are stored in memory only and will be cleared when you refresh the page.
-          Use strong passwords (16+ characters, mixed case, numbers, symbols).
-        </AlertDescription>
-      </Alert>
-
       {/* Main Layout: Input | Output */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
           {/* Left: Input Section */}
@@ -256,7 +242,7 @@ const EncryptionTab = () => {
                 disabled={!output}
                 className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full"
               >
-                {copiedOutput ? 'COPIED!' : 'COPY'}
+                {copiedOutput ? 'COPIED!' : 'CPY'}
               </Button>
               <Button
                 onClick={() => setOutput("")}
