@@ -246,7 +246,7 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
                   onClick={onLogout}
                   className="text-white hover:bg-white/20"
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
+                  <LogOut className="w-4 h-4" />
                   Logout
                 </Button>
               </div>
