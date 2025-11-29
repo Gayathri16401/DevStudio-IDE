@@ -1,10 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock, Unlock, Copy, Shield, AlertTriangle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import CryptoJS from "crypto-js";
 
 const EncryptionTab = () => {
@@ -16,6 +14,10 @@ const EncryptionTab = () => {
   const [inputFocused, setInputFocused] = useState(false);
   const [outputFocused, setOutputFocused] = useState(false);
   const [keyStrength, setKeyStrength] = useState<"weak" | "medium" | "strong" | null>(null);
+  const [resetTimer, setResetTimer] = useState<number>(0); // Timer in minutes (0-60)
+  const [isTimerActive, setIsTimerActive] = useState(false);
+  const [remainingTime, setRemainingTime] = useState<number>(0); // Remaining seconds
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Validate key strength
   const validateKeyStrength = (keyValue: string) => {
@@ -116,24 +118,55 @@ const EncryptionTab = () => {
     setOutput("");
     setErrorMessage("COMP_EMSG");
     setKeyStrength(null);
+    stopTimer();
   };
 
-  const getKeyStrengthColor = () => {
-    switch (keyStrength) {
-      case "weak": return "text-red-400";
-      case "medium": return "text-yellow-400";
-      case "strong": return "text-green-400";
-      default: return "text-slate-400";
+  const startTimer = () => {
+    if (resetTimer > 0 && resetTimer <= 60) {
+      setRemainingTime(resetTimer * 60); // Convert minutes to seconds
+      setIsTimerActive(true);
     }
   };
 
-  const getKeyStrengthText = () => {
-    switch (keyStrength) {
-      case "weak": return "Weak (use 8+ chars, mixed case, numbers)";
-      case "medium": return "Medium (add special characters for better security)";
-      case "strong": return "Strong";
-      default: return "Enter encryption key";
+  const stopTimer = () => {
+    setIsTimerActive(false);
+    setRemainingTime(0);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
+  };
+
+  // Timer countdown effect
+  useEffect(() => {
+    if (isTimerActive && remainingTime > 0) {
+      timerRef.current = setInterval(() => {
+        setRemainingTime((prev) => {
+          if (prev <= 1) {
+            // Timer finished - clear all data
+            handleClearAll();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else if (remainingTime === 0 && timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+      setIsTimerActive(false);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [isTimerActive, remainingTime]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const copyOutput = () => {
@@ -155,23 +188,17 @@ const EncryptionTab = () => {
                 onChange={(e) => setMessage(e.target.value)}
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
-                placeholder="Enter data to encrypt..."
+                placeholder="Enter data..."
                 className={`bg-slate-700 border-slate-600 text-slate-100 flex-1 text-[10px] sm:text-xs resize-none transition-all min-h-[120px] ${
                   !inputFocused && message ? 'blur-sm' : ''
                 }`}
               />
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className={`text-[10px] sm:text-xs ${getKeyStrengthColor()}`}>
-                  {getKeyStrengthText()}
-                </span>
-              </div>
               <Input
                 type="password"
                 value={key}
                 onChange={(e) => handleKeyChange(e.target.value)}
-                placeholder="Enter encryption key (16+ chars)"
                 className={`bg-slate-700 border-slate-600 text-slate-100 h-8 sm:h-10 text-[10px] sm:text-xs font-mono ${
                   keyStrength === "weak" ? "border-red-500" :
                   keyStrength === "medium" ? "border-yellow-500" :
@@ -236,7 +263,32 @@ const EncryptionTab = () => {
               />
             </div>
             <div className="grid grid-cols-3 gap-1 sm:gap-2">
-              <div></div>
+              <div className="flex items-center justify-center gap-1 bg-slate-700 border border-slate-600 rounded px-2 py-1 h-7 sm:h-8">
+                <Label className="text-slate-300 text-[10px] sm:text-xs whitespace-nowrap">RST Timer (0-60 mins)</Label>
+                <input
+                  type="number"
+                  min="0"
+                  max="60"
+                  value={resetTimer}
+                  onChange={(e) => {
+                    const value = Math.min(60, Math.max(0, parseInt(e.target.value) || 0));
+                    setResetTimer(value);
+                    // Auto-start timer when value is set
+                    if (value > 0) {
+                      setRemainingTime(value * 60);
+                      setIsTimerActive(true);
+                    } else {
+                      stopTimer();
+                    }
+                  }}
+                  className="bg-slate-800 border border-slate-500 rounded text-slate-100 h-5 sm:h-6 text-[10px] sm:text-xs w-8 sm:w-10 px-1 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                {isTimerActive && remainingTime > 0 && (
+                  <span className="text-green-400 text-[10px] sm:text-xs font-mono whitespace-nowrap">
+                    {formatTime(remainingTime)}
+                  </span>
+                )}
+              </div>
               <Button
                 onClick={copyOutput}
                 disabled={!output}
