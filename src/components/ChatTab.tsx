@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Terminal, Trash2, Copy } from "lucide-react";
+import { Send, Terminal, Trash2, Copy, Edit2, Check, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -28,6 +28,8 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
   const [username, setUsername] = useState<string | null>(null);
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [editedContent, setEditedContent] = useState("");
   const { user: authUser } = useAuth();
   const consoleRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -256,6 +258,59 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
     setTimeout(() => setCopiedMessageId(null), 2000);
   };
 
+  const deleteMessage = async (messageId: string) => {
+    try {
+      const { error } = await supabase
+        .from('console_messages')
+        .delete()
+        .eq('id', messageId);
+
+      if (error) throw error;
+      
+      // Immediately update local state
+      setLogs(prev => prev.filter(log => log.id !== messageId));
+      
+      toast.success('Message deleted');
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      toast.error('Failed to delete message');
+    }
+  };
+
+  const startEditing = (messageId: string, content: string) => {
+    setEditingMessageId(messageId);
+    setEditedContent(content);
+  };
+
+  const cancelEditing = () => {
+    setEditingMessageId(null);
+    setEditedContent("");
+  };
+
+  const saveEdit = async (messageId: string) => {
+    if (!editedContent.trim()) {
+      toast.error('Message cannot be empty');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('console_messages')
+        .update({ content: editedContent.trim() })
+        .eq('id', messageId);
+
+      if (error) throw error;
+      
+      toast.success('Message updated');
+      setEditingMessageId(null);
+      setEditedContent("");
+    } catch (error) {
+      console.error('Error updating message:', error);
+      toast.error('Failed to update message');
+    }
+  };
+
+
   return (
     <>
       <ClearConsoleDialog
@@ -300,10 +355,11 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
             <div className="space-y-0 font-mono text-[10px] sm:text-xs leading-relaxed">
               {logs.map((log) => {
                 const isCurrentUser = authUser && log.user_id === authUser.id;
+                const isEditing = editingMessageId === log.id;
                 return (
                   <div key={log.id}>
                     {log.message_type === 'message' ? (
-                      <div className="group">
+                      <div className="group mb-3">
                         <div className="flex items-center justify-between">
                           <div className="text-gray-600">
                             <span className="text-gray-700">
@@ -316,22 +372,83 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
                               {isCurrentUser ? "DEBUG" : "INFO"}
                             </span>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => copyMessage(log.content, log.id)}
-                            className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-gray-300 hover:bg-[#2d2d2d] h-5 w-5 p-0 transition-opacity"
-                          >
-                            {copiedMessageId === log.id ? (
-                              <span className="text-[9px]">✓</span>
-                            ) : (
-                              <Copy className="w-2.5 h-2.5" />
+                          <div className="flex items-center space-x-1">
+                            {isCurrentUser && !isEditing && (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => startEditing(log.id, log.content)}
+                                  className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-gray-300 hover:bg-[#2d2d2d] h-5 w-5 p-0 transition-opacity"
+                                  title="Edit message"
+                                >
+                                  <Edit2 className="w-2.5 h-2.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => deleteMessage(log.id)}
+                                  className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 hover:bg-[#2d2d2d] h-5 w-5 p-0 transition-opacity"
+                                  title="Delete message"
+                                >
+                                  <Trash2 className="w-2.5 h-2.5" />
+                                </Button>
+                              </>
                             )}
-                          </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => copyMessage(log.content, log.id)}
+                              className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-gray-300 hover:bg-[#2d2d2d] h-5 w-5 p-0 transition-opacity"
+                              title="Copy message"
+                            >
+                              {copiedMessageId === log.id ? (
+                                <span className="text-[9px]">✓</span>
+                              ) : (
+                                <Copy className="w-2.5 h-2.5" />
+                              )}
+                            </Button>
+                          </div>
                         </div>
-                        <div className="text-gray-300 break-all overflow-wrap-anywhere mb-3">
-                          {log.content}
-                        </div>
+                        {isEditing ? (
+                          <div className="flex items-center gap-2 mt-1">
+                            <Input
+                              value={editedContent}
+                              onChange={(e) => setEditedContent(e.target.value)}
+                              className="flex-1 bg-[#1e1e1e] border-gray-700 text-gray-300 font-mono text-[10px] sm:text-xs h-6 sm:h-7"
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  saveEdit(log.id);
+                                } else if (e.key === 'Escape') {
+                                  cancelEditing();
+                                }
+                              }}
+                            />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => saveEdit(log.id)}
+                              className="text-green-400 hover:text-green-300 hover:bg-[#2d2d2d] h-6 w-6 p-0"
+                              title="Save"
+                            >
+                              <Check className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={cancelEditing}
+                              className="text-red-400 hover:text-red-300 hover:bg-[#2d2d2d] h-6 w-6 p-0"
+                              title="Cancel"
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="text-gray-300 break-all overflow-wrap-anywhere mt-0.5">
+                            {log.content}
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div className="text-green-400 break-words text-[10px] sm:text-xs">
