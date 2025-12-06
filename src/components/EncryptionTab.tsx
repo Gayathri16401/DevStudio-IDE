@@ -18,6 +18,9 @@ const EncryptionTab = () => {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [remainingTime, setRemainingTime] = useState<number>(0); // Remaining seconds
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const messageTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const outputTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const keyInputRef = useRef<HTMLInputElement>(null);
 
   // Validate key strength
   const validateKeyStrength = (keyValue: string) => {
@@ -108,8 +111,8 @@ const EncryptionTab = () => {
 
   const handleClear = () => {
     setMessage("");
-    setOutput("");
-    setErrorMessage("COMP_EMSG");
+    // Focus on message textarea after clearing
+    setTimeout(() => messageTextareaRef.current?.focus(), 0);
   };
 
   const handleClearAll = () => {
@@ -119,6 +122,14 @@ const EncryptionTab = () => {
     setErrorMessage("COMP_EMSG");
     setKeyStrength(null);
     stopTimer();
+    // Focus on SK input after clearing all
+    setTimeout(() => keyInputRef.current?.focus(), 0);
+  };
+
+  const handleClearOutput = () => {
+    setOutput("");
+    // Focus on output textarea after clearing
+    setTimeout(() => outputTextareaRef.current?.focus(), 0);
   };
 
   const startTimer = () => {
@@ -184,6 +195,7 @@ const EncryptionTab = () => {
             <div className="flex-1 flex flex-col space-y-2">
               <Label className="text-slate-300 text-[10px] sm:text-xs">Paste (or write) text content</Label>
               <Textarea
+                ref={messageTextareaRef}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onFocus={() => setInputFocused(true)}
@@ -196,6 +208,7 @@ const EncryptionTab = () => {
             </div>
             <div className="space-y-2">
               <Input
+                ref={keyInputRef}
                 type="password"
                 value={key}
                 placeholder="SK"
@@ -244,6 +257,7 @@ const EncryptionTab = () => {
             <div className="flex-1 flex flex-col space-y-2">
               <Label className="text-slate-300 text-[10px] sm:text-xs">Computational Result</Label>
               <Textarea
+                ref={outputTextareaRef}
                 value={output}
                 readOnly
                 onFocus={() => setOutputFocused(true)}
@@ -301,7 +315,7 @@ const EncryptionTab = () => {
                 {copiedOutput ? 'COPIED!' : 'CPY'}
               </Button>
               <Button
-                onClick={() => setOutput("")}
+                onClick={handleClearOutput}
                 disabled={!output}
                 className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full"
               >
