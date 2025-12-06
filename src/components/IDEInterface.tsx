@@ -120,24 +120,100 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
           <div className="flex-1 p-2 overflow-y-auto">
             <div className="space-y-1">
               <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm">
-                <Folder className="w-4 h-4 text-blue-400" />
-                <span>src</span>
-              </div>
-              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
-                <FileText className="w-4 h-4 text-green-400" />
-                <span>main.js</span>
-              </div>
-              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
-                <FileText className="w-4 h-4 text-green-400" />
-                <span>utils.js</span>
+                <FileText className="w-4 h-4 text-gray-400" />
+                <span>.gitignore</span>
               </div>
               <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm">
-                <Folder className="w-4 h-4 text-blue-400" />
-                <span>components</span>
+                <FileText className="w-4 h-4 text-orange-400" />
+                <span>docker-compose.yml</span>
               </div>
               <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm">
                 <FileText className="w-4 h-4 text-yellow-400" />
                 <span>package.json</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm">
+                <FileText className="w-4 h-4 text-purple-400" />
+                <span>README.md</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm">
+                <FileText className="w-4 h-4 text-blue-400" />
+                <span>tsconfig.json</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm">
+                <Folder className="w-4 h-4 text-gray-500" />
+                <span className="text-gray-500">node_modules</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm">
+                <Folder className="w-4 h-4 text-blue-400" />
+                <span>public</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
+                <FileText className="w-4 h-4 text-orange-400" />
+                <span>index.html</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
+                <FileText className="w-4 h-4 text-gray-400" />
+                <span>favicon.ico</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm">
+                <Folder className="w-4 h-4 text-blue-400" />
+                <span>src</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
+                <FileText className="w-4 h-4 text-blue-400" />
+                <span>index.tsx</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
+                <FileText className="w-4 h-4 text-blue-400" />
+                <span>App.tsx</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
+                <Folder className="w-4 h-4 text-blue-400" />
+                <span>api</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-8">
+                <FileText className="w-4 h-4 text-green-400" />
+                <span>client.ts</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
+                <Folder className="w-4 h-4 text-blue-400" />
+                <span>assets</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
+                <Folder className="w-4 h-4 text-blue-400" />
+                <span>components</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-8">
+                <FileText className="w-4 h-4 text-blue-400" />
+                <span>Header.tsx</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-8">
+                <FileText className="w-4 h-4 text-blue-400" />
+                <span>Sidebar.tsx</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
+                <Folder className="w-4 h-4 text-blue-400" />
+                <span>hooks</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-8">
+                <FileText className="w-4 h-4 text-green-400" />
+                <span>useAuth.ts</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
+                <Folder className="w-4 h-4 text-blue-400" />
+                <span>pages</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-8">
+                <FileText className="w-4 h-4 text-blue-400" />
+                <span>Home.tsx</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-8">
+                <FileText className="w-4 h-4 text-blue-400" />
+                <span>Dashboard.tsx</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
+                <Folder className="w-4 h-4 text-blue-400" />
+                <span>utils</span>
               </div>
             </div>
           </div>
