@@ -177,22 +177,6 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
               </div>
               <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
                 <Folder className="w-4 h-4 text-blue-400" />
-                <span>assets</span>
-              </div>
-              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
-                <Folder className="w-4 h-4 text-blue-400" />
-                <span>components</span>
-              </div>
-              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-8">
-                <FileText className="w-4 h-4 text-blue-400" />
-                <span>Header.tsx</span>
-              </div>
-              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-8">
-                <FileText className="w-4 h-4 text-blue-400" />
-                <span>Sidebar.tsx</span>
-              </div>
-              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
-                <Folder className="w-4 h-4 text-blue-400" />
                 <span>hooks</span>
               </div>
               <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-8">
