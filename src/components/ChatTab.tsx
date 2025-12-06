@@ -30,6 +30,7 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const { user: authUser } = useAuth();
   const consoleRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Load username on mount
   useEffect(() => {
@@ -98,6 +99,16 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
           consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
         }
       });
+    }
+  }, [isActive]);
+
+  // Focus input when tab becomes active
+  useEffect(() => {
+    if (isActive && inputRef.current) {
+      // Small delay to ensure the tab transition is complete
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   }, [isActive]);
 
@@ -339,6 +350,7 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
           <form onSubmit={handleSend} className="flex items-center space-x-1 sm:space-x-2">
             <span className="text-green-400 font-mono text-xs sm:text-sm font-bold select-none">❯</span>
             <Input
+              ref={inputRef}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="npm run dev"
