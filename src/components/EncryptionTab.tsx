@@ -22,6 +22,37 @@ const EncryptionTab = () => {
   const outputTextareaRef = useRef<HTMLTextAreaElement>(null);
   const keyInputRef = useRef<HTMLInputElement>(null);
 
+  // Blur inputs when tab/window loses focus
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Blur all input fields when tab becomes hidden
+        messageTextareaRef.current?.blur();
+        outputTextareaRef.current?.blur();
+        keyInputRef.current?.blur();
+        setInputFocused(false);
+        setOutputFocused(false);
+      }
+    };
+
+    const handleBlur = () => {
+      // Blur all input fields when window loses focus
+      messageTextareaRef.current?.blur();
+      outputTextareaRef.current?.blur();
+      keyInputRef.current?.blur();
+      setInputFocused(false);
+      setOutputFocused(false);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleBlur);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleBlur);
+    };
+  }, []);
+
   // Validate key strength
   const validateKeyStrength = (keyValue: string) => {
     if (!keyValue) {
