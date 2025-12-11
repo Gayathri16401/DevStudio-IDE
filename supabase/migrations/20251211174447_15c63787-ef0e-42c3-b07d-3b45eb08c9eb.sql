@@ -1,0 +1,1 @@
+ALTER TABLE public.console_messages REPLICA IDENTITY FULL;
