@@ -392,43 +392,47 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
                             <span className={isCurrentUser ? "text-green-400" : "text-blue-400"}>
                               {isCurrentUser ? "►" : "◄"}
                             </span>
-                            <span className={isCurrentUser ? "text-green-400" : "text-blue-400"}>
+                            <span className={`${isCurrentUser ? "text-green-400" : "text-blue-400"} inline-block w-[32px]`}>
                               {isCurrentUser ? "DEBUG" : "INFO"}
                             </span>
-                            {!isCurrentUser && (
-                              <div className="min-w-[30px] max-w-[120px] min-h-[14px] bg-[#1a1a1a] border border-blue-700/40 rounded px-1.5 py-0.5 text-[9px] text-blue-400/70 cursor-text hover:border-blue-600/60 focus:border-blue-500 focus:bg-[#252525] focus:text-blue-400 transition-all whitespace-nowrap overflow-hidden"
-                                   contentEditable
-                                   suppressContentEditableWarning={true}
-                                   title="Acknowledgement"
-                                   style={{ outline: 'none' }}
-                                   onKeyDown={(e) => {
-                                     if (e.key === 'Enter') {
-                                       e.preventDefault();
-                                     }
-                                   }}
-                                   onBlur={async (e) => {
-                                     const target = e.target as HTMLDivElement;
-                                     const ackValue = target.textContent?.trim() || null;
-                                     try {
-                                       await supabase
-                                         .from('console_messages')
-                                         .update({ acknowledgement: ackValue })
-                                         .eq('id', log.id);
-                                       // Update local state
-                                       setLogs(prev => prev.map(l =>
-                                         l.id === log.id ? { ...l, acknowledgement: ackValue } : l
-                                       ));
-                                     } catch (error) {
-                                       console.error('Error saving acknowledgement:', error);
-                                     }
-                                   }}
-                                   onInput={(e) => {
-                                     const target = e.target as HTMLDivElement;
-                                     target.style.width = 'auto';
-                                   }}>
-                                {log.acknowledgement || ''}
-                              </div>
-                            )}
+                            {/* Show acknowledgement field for all messages */}
+                            <div className={`min-w-[20px] max-w-[100px] bg-[#1a1a1a] border rounded px-1.5 py-0.5 text-[9px] transition-all whitespace-nowrap overflow-hidden ${
+                              isCurrentUser
+                                ? 'border-green-700/40 text-green-400/70 hover:border-green-600/60 focus:border-green-500 focus:text-green-400'
+                                : 'border-blue-700/40 text-blue-400/70 cursor-text hover:border-blue-600/60 focus:border-blue-500 focus:text-blue-400'
+                            } ${!isCurrentUser ? 'focus:bg-[#252525]' : ''} ${log.acknowledgement ? '' : 'opacity-60'}`}
+                                 contentEditable={!isCurrentUser}
+                                 suppressContentEditableWarning={true}
+                                 title={isCurrentUser ? "Acknowledgement (read-only)" : "Acknowledgement"}
+                                 style={{ outline: 'none', minHeight: '20px', display: 'inline-flex', alignItems: 'center' }}
+                                 onKeyDown={(e) => {
+                                   if (e.key === 'Enter') {
+                                     e.preventDefault();
+                                   }
+                                 }}
+                                 onBlur={async (e) => {
+                                   if (isCurrentUser) return; // Don't allow editing own message acknowledgements
+                                   const target = e.target as HTMLDivElement;
+                                   const ackValue = target.textContent?.trim() || null;
+                                   try {
+                                     await supabase
+                                       .from('console_messages')
+                                       .update({ acknowledgement: ackValue })
+                                       .eq('id', log.id);
+                                     // Update local state
+                                     setLogs(prev => prev.map(l =>
+                                       l.id === log.id ? { ...l, acknowledgement: ackValue } : l
+                                     ));
+                                   } catch (error) {
+                                     console.error('Error saving acknowledgement:', error);
+                                   }
+                                 }}
+                                 onInput={(e) => {
+                                   const target = e.target as HTMLDivElement;
+                                   target.style.width = 'auto';
+                                 }}>
+                              {log.acknowledgement || ''}
+                            </div>
                           </div>
                           <div className="flex items-center space-x-1">
                             {isCurrentUser && !isEditing && (
