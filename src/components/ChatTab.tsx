@@ -34,6 +34,7 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
   const { user: authUser } = useAuth();
   const consoleRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const hasLoadedRef = useRef(false);
 
   // Load username on mount
   useEffect(() => {
@@ -42,9 +43,15 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
     }
   }, [authUser]);
 
-  // Load messages on mount
+  // Load messages only once on mount
   useEffect(() => {
-    loadMessages();
+    if (!hasLoadedRef.current) {
+      loadMessages();
+      hasLoadedRef.current = true;
+    } else {
+      // If already loaded, set loading to false immediately
+      setLoading(false);
+    }
   }, []);
 
   // Subscribe to real-time updates
@@ -71,8 +78,24 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
           table: 'console_messages',
           filter: 'chat_type=eq.console'
         },
-        () => {
-          loadMessages(); // Reload all messages when any is deleted
+        (payload) => {
+          // Remove deleted message from local state instead of reloading
+          setLogs(prev => prev.filter(log => log.id !== payload.old.id));
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'console_messages',
+          filter: 'chat_type=eq.console'
+        },
+        (payload) => {
+          // Update message in local state
+          setLogs(prev => prev.map(log =>
+            log.id === payload.new.id ? payload.new as LogEntry : log
+          ));
         }
       )
       .subscribe();

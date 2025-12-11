@@ -233,18 +233,16 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
               </TabsTrigger>
             </TabsList>
 
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden relative">
               <TabsContent value="main.js" className="h-full m-0">
                 <CodeEditor />
               </TabsContent>
-              <TabsContent value="chat" className="h-full m-0">
+              <div className={activeTab === "chat" ? "h-full" : "hidden h-full"}>
                 <ChatTab user={user} isActive={activeTab === "chat"} />
-              </TabsContent>
-              <TabsContent value="encryption" className="h-full m-0" forceMount>
-                <div className={activeTab === "encryption" ? "h-full" : "hidden"}>
-                  <EncryptionTab />
-                </div>
-              </TabsContent>
+              </div>
+              <div className={activeTab === "encryption" ? "h-full" : "hidden h-full"}>
+                <EncryptionTab />
+              </div>
             </div>
           </Tabs>
         </div>
