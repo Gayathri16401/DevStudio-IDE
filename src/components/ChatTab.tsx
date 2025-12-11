@@ -361,16 +361,28 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
                     {log.message_type === 'message' ? (
                       <div className="group mb-3">
                         <div className="flex items-center justify-between">
-                          <div className="text-gray-600">
+                          <div className="flex items-center gap-2 text-gray-600">
                             <span className="text-gray-700">
                               [{formatDateTime(log.created_at)}]
                             </span>
-                            <span className={isCurrentUser ? "text-green-400 ml-2" : "text-blue-400 ml-2"}>
+                            <span className={isCurrentUser ? "text-green-400" : "text-blue-400"}>
                               {isCurrentUser ? "►" : "◄"}
                             </span>
-                            <span className={isCurrentUser ? "text-green-400 ml-1" : "text-blue-400 ml-1"}>
+                            <span className={isCurrentUser ? "text-green-400" : "text-blue-400"}>
                               {isCurrentUser ? "DEBUG" : "INFO"}
                             </span>
+                            {!isCurrentUser && (
+                              <div className="min-w-[30px] max-w-[120px] min-h-[14px] bg-[#1a1a1a] border border-blue-700/40 rounded px-1.5 py-0.5 text-[9px] text-blue-400/70 cursor-text hover:border-blue-600/60 focus:border-blue-500 focus:bg-[#252525] focus:text-blue-400 transition-all"
+                                   contentEditable
+                                   suppressContentEditableWarning={true}
+                                   title="Acknowledgement"
+                                   style={{ outline: 'none' }}
+                                   onInput={(e) => {
+                                     const target = e.target as HTMLDivElement;
+                                     target.style.width = 'auto';
+                                   }}>
+                              </div>
+                            )}
                           </div>
                           <div className="flex items-center space-x-1">
                             {isCurrentUser && !isEditing && (
