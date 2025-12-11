@@ -373,11 +373,16 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
                               {isCurrentUser ? "DEBUG" : "INFO"}
                             </span>
                             {!isCurrentUser && (
-                              <div className="min-w-[30px] max-w-[120px] min-h-[14px] bg-[#1a1a1a] border border-blue-700/40 rounded px-1.5 py-0.5 text-[9px] text-blue-400/70 cursor-text hover:border-blue-600/60 focus:border-blue-500 focus:bg-[#252525] focus:text-blue-400 transition-all"
+                              <div className="min-w-[30px] max-w-[120px] min-h-[14px] bg-[#1a1a1a] border border-blue-700/40 rounded px-1.5 py-0.5 text-[9px] text-blue-400/70 cursor-text hover:border-blue-600/60 focus:border-blue-500 focus:bg-[#252525] focus:text-blue-400 transition-all whitespace-nowrap overflow-hidden"
                                    contentEditable
                                    suppressContentEditableWarning={true}
                                    title="Acknowledgement"
                                    style={{ outline: 'none' }}
+                                   onKeyDown={(e) => {
+                                     if (e.key === 'Enter') {
+                                       e.preventDefault();
+                                     }
+                                   }}
                                    onBlur={async (e) => {
                                      const target = e.target as HTMLDivElement;
                                      const ackValue = target.textContent?.trim() || null;
@@ -387,7 +392,7 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
                                          .update({ acknowledgement: ackValue })
                                          .eq('id', log.id);
                                        // Update local state
-                                       setLogs(prev => prev.map(l => 
+                                       setLogs(prev => prev.map(l =>
                                          l.id === log.id ? { ...l, acknowledgement: ackValue } : l
                                        ));
                                      } catch (error) {
