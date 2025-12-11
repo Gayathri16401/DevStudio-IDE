@@ -19,6 +19,7 @@ interface LogEntry {
   content: string;
   message_type: string;
   created_at: string;
+  acknowledgement: string | null;
 }
 
 const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
@@ -377,10 +378,27 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
                                    suppressContentEditableWarning={true}
                                    title="Acknowledgement"
                                    style={{ outline: 'none' }}
+                                   onBlur={async (e) => {
+                                     const target = e.target as HTMLDivElement;
+                                     const ackValue = target.textContent?.trim() || null;
+                                     try {
+                                       await supabase
+                                         .from('console_messages')
+                                         .update({ acknowledgement: ackValue })
+                                         .eq('id', log.id);
+                                       // Update local state
+                                       setLogs(prev => prev.map(l => 
+                                         l.id === log.id ? { ...l, acknowledgement: ackValue } : l
+                                       ));
+                                     } catch (error) {
+                                       console.error('Error saving acknowledgement:', error);
+                                     }
+                                   }}
                                    onInput={(e) => {
                                      const target = e.target as HTMLDivElement;
                                      target.style.width = 'auto';
                                    }}>
+                                {log.acknowledgement || ''}
                               </div>
                             )}
                           </div>

@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       console_messages: {
         Row: {
+          acknowledgement: string | null
           chat_type: string
           content: string
           created_at: string
@@ -25,6 +26,7 @@ export type Database = {
           username: string
         }
         Insert: {
+          acknowledgement?: string | null
           chat_type?: string
           content: string
           created_at?: string
@@ -34,6 +36,7 @@ export type Database = {
           username: string
         }
         Update: {
+          acknowledgement?: string | null
           chat_type?: string
           content?: string
           created_at?: string
