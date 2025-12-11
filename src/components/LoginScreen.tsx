@@ -195,7 +195,7 @@ const LoginScreen = ({ onModeSelect }: LoginScreenProps) => {
                 variant="ghost" 
                 size="sm" 
                 onClick={() => setIsSignUp(!isSignUp)}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-blue-400 hover:bg-slate-700/50"
               >
                 {isSignUp ? "Already have an account? Sign in" : "Need an account? Sign up"}
               </Button>
