@@ -44,10 +44,15 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
     loadMessages();
   }, []);
 
-  // Subscribe to real-time updates
+  // Subscribe to real-time updates with error handling and reconnection
   useEffect(() => {
     const channel = supabase
-      .channel('normal_chat_messages')
+      .channel('normal_chat_messages', {
+        config: {
+          broadcast: { self: true },
+          presence: { key: '' },
+        },
+      })
       .on(
         'postgres_changes',
         {
@@ -57,7 +62,14 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
           filter: 'chat_type=eq.normal'
         },
         (payload) => {
-          setMessages(prev => [...prev, payload.new as Message]);
+          console.log('Real-time INSERT received:', payload);
+          setMessages(prev => {
+            // Prevent duplicates
+            if (prev.some(msg => msg.id === payload.new.id)) {
+              return prev;
+            }
+            return [...prev, payload.new as Message];
+          });
         }
       )
       .on(
@@ -68,13 +80,48 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
           table: 'console_messages',
           filter: 'chat_type=eq.normal'
         },
-        () => {
-          loadMessages();
+        (payload) => {
+          console.log('Real-time DELETE received:', payload);
+          // Remove deleted message from local state
+          setMessages(prev => prev.filter(msg => msg.id !== payload.old.id));
         }
       )
-      .subscribe();
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'console_messages',
+          filter: 'chat_type=eq.normal'
+        },
+        (payload) => {
+          console.log('Real-time UPDATE received:', payload);
+          setMessages(prev => prev.map(msg =>
+            msg.id === payload.new.id ? payload.new as Message : msg
+          ));
+        }
+      )
+      .subscribe((status, err) => {
+        console.log('Subscription status:', status);
+        if (err) {
+          console.error('Subscription error:', err);
+          toast.error('Connection issue detected. Reconnecting...');
+        }
+        if (status === 'SUBSCRIBED') {
+          console.log('Successfully subscribed to real-time updates');
+        }
+        if (status === 'CHANNEL_ERROR') {
+          console.error('Channel error, reloading messages...');
+          loadMessages();
+        }
+        if (status === 'TIMED_OUT') {
+          console.error('Subscription timed out, reloading messages...');
+          loadMessages();
+        }
+      });
 
     return () => {
+      console.log('Unsubscribing from channel');
       supabase.removeChannel(channel);
     };
   }, []);
