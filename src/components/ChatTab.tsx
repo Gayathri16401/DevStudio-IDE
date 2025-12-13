@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Terminal, Trash2, Copy, Edit2, Check, X } from "lucide-react";
+import { Send, Terminal, Trash2, Copy, Edit2, Check, X, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -31,6 +31,7 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editedContent, setEditedContent] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
   const { user: authUser } = useAuth();
   const consoleRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -208,6 +209,26 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
     }
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const { data, error } = await supabase
+        .from('console_messages')
+        .select('*')
+        .eq('chat_type', 'console')
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setLogs(data || []);
+      toast.success('Console refreshed');
+    } catch (error) {
+      console.error('Error refreshing console:', error);
+      toast.error('Failed to refresh console');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() && authUser && username) {
@@ -379,12 +400,23 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
       <div className="h-full flex flex-col bg-black relative">
         {/* Terminal Header - looks like VS Code terminal */}
         <div className="relative flex items-center justify-between px-2 sm:px-3 py-1.5 bg-[#1e1e1e] border-b border-[#2d2d2d]">
-          <div className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto">
-            <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-500 flex-shrink-0" />
-            <span className="text-[10px] sm:text-xs text-gray-400 font-mono whitespace-nowrap">bash</span>
-            <span className="text-[10px] sm:text-xs text-gray-600 hidden sm:inline">•</span>
-            <span className="text-[10px] sm:text-xs text-gray-500 font-mono whitespace-nowrap hidden sm:inline">node v18.17.0</span>
-          </div>
+        <div className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto">
+          <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-500 flex-shrink-0" />
+          <span className="text-[10px] sm:text-xs text-gray-400 font-mono whitespace-nowrap">bash</span>
+          <span className="text-[10px] sm:text-xs text-gray-600 hidden sm:inline">•</span>
+          <span className="text-[10px] sm:text-xs text-gray-500 font-mono whitespace-nowrap hidden sm:inline">node v18.17.0</span>
+        </div>
+        <div className="flex items-center space-x-1">
+          <Button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            size="sm"
+            variant="ghost"
+            className="text-gray-500 hover:text-gray-300 hover:bg-[#2d2d2d] h-5 sm:h-6 px-1 sm:px-2 transition-colors flex-shrink-0"
+            title="Refresh console"
+          >
+            <RefreshCw className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${refreshing ? 'animate-spin' : ''}`} />
+          </Button>
           <Button
             onClick={() => setShowClearDialog(true)}
             size="sm"
@@ -394,6 +426,7 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
             <Trash2 className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
           </Button>
         </div>
+      </div>
       
         {/* Terminal Console Area - authentic terminal look */}
         <div ref={consoleRef} className="p-2 sm:p-3 bg-black overflow-y-auto terminal-scrollbar" style={{ height: 'calc(100vh - 200px)' }}>

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { LogOut, Send, User, Trash2 } from "lucide-react";
+import { LogOut, Send, User, Trash2, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -29,6 +29,7 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string | null>(null);
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const { user: authUser } = useAuth();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -174,6 +175,26 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
     }
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const { data, error } = await supabase
+        .from('console_messages')
+        .select('*')
+        .eq('chat_type', 'normal')
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setMessages(data || []);
+      toast.success('Messages refreshed');
+    } catch (error) {
+      console.error('Error refreshing messages:', error);
+      toast.error('Failed to refresh messages');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() && authUser && username) {
@@ -289,6 +310,17 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
                 <span className="truncate">SecuChat - Welcome!</span>
               </CardTitle>
               <div className="flex items-center space-x-1 sm:space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  className="text-white hover:bg-white/20 h-8 px-2 sm:px-3"
+                  title="Refresh messages"
+                >
+                  <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 sm:mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                  <span className="hidden sm:inline">Refresh</span>
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
