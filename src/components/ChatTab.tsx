@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { ClearConsoleDialog } from "./ClearConsoleDialog";
+import { DeleteMessageDialog } from "./DeleteMessageDialog";
 
 interface ChatTabProps {
   user: string;
@@ -28,6 +29,8 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string | null>(null);
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editedContent, setEditedContent] = useState("");
@@ -335,22 +338,32 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
     setTimeout(() => setCopiedMessageId(null), 2000);
   };
 
-  const deleteMessage = async (messageId: string) => {
+  const handleDeleteClick = (messageId: string) => {
+    setMessageToDelete(messageId);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDeleteMessage = async () => {
+    if (!messageToDelete) return;
+
     try {
       const { error } = await supabase
         .from('console_messages')
         .delete()
-        .eq('id', messageId);
+        .eq('id', messageToDelete);
 
       if (error) throw error;
       
       // Immediately update local state
-      setLogs(prev => prev.filter(log => log.id !== messageId));
+      setLogs(prev => prev.filter(log => log.id !== messageToDelete));
       
       toast.success('Message deleted');
     } catch (error) {
       console.error('Error deleting message:', error);
       toast.error('Failed to delete message');
+    } finally {
+      setShowDeleteDialog(false);
+      setMessageToDelete(null);
     }
   };
 
@@ -395,6 +408,12 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
         onOpenChange={setShowClearDialog}
         onClearForMe={handleClearForMe}
         onClearForEveryone={handleClearForEveryone}
+      />
+      
+      <DeleteMessageDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={confirmDeleteMessage}
       />
       
       <div className="h-full flex flex-col bg-black relative">
@@ -514,7 +533,7 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => deleteMessage(log.id)}
+                                  onClick={() => handleDeleteClick(log.id)}
                                   className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 hover:bg-[#2d2d2d] h-5 w-5 p-0 transition-opacity"
                                   title="Delete message"
                                 >
