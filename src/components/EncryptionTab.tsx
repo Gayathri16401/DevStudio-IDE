@@ -1,11 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import CryptoJS from "crypto-js";
 
-const EncryptionTab = () => {
+export interface EncryptionTabRef {
+  clearAll: () => void;
+}
+
+const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
   const [message, setMessage] = useState("");
   const [key, setKey] = useState(""); // Session-only storage - no persistence
   const [output, setOutput] = useState("");
@@ -21,6 +25,11 @@ const EncryptionTab = () => {
   const messageTextareaRef = useRef<HTMLTextAreaElement>(null);
   const outputTextareaRef = useRef<HTMLTextAreaElement>(null);
   const keyInputRef = useRef<HTMLInputElement>(null);
+
+  // Expose clearAll method to parent
+  useImperativeHandle(ref, () => ({
+    clearAll: handleClearAll
+  }));
 
   // Blur inputs when tab/window loses focus
   useEffect(() => {
@@ -358,7 +367,9 @@ const EncryptionTab = () => {
         </div>
       </div>
   );
-};
+});
+
+EncryptionTab.displayName = 'EncryptionTab';
 
 export default EncryptionTab;
 

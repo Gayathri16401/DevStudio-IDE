@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Terminal, Trash2, Copy, Edit2, Check, X, RefreshCw } from "lucide-react";
@@ -23,7 +23,11 @@ interface LogEntry {
   acknowledgement: string | null;
 }
 
-const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
+export interface ChatTabRef {
+  clearConsole: () => Promise<void>;
+}
+
+const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true }, ref) => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -39,6 +43,11 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
   const consoleRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const hasLoadedRef = useRef(false);
+
+  // Expose clearConsole method to parent
+  useImperativeHandle(ref, () => ({
+    clearConsole: handleClearForMe
+  }));
 
   // Load username on mount
   useEffect(() => {
@@ -632,6 +641,8 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
       </div>
     </>
   );
-};
+});
+
+ChatTab.displayName = 'ChatTab';
 
 export default ChatTab;

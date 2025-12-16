@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -13,15 +13,17 @@ import {
   Lock,
   FolderOpen,
   FileText,
-  Coffee
+  Coffee,
+  Save
 } from "lucide-react";
 import CodeEditor from "./CodeEditor";
 import AppFileViewer from "./AppFileViewer";
 import PackageJsonViewer from "./PackageJsonViewer";
-import ChatTab from "./ChatTab";
-import EncryptionTab from "./EncryptionTab";
+import ChatTab, { ChatTabRef } from "./ChatTab";
+import EncryptionTab, { EncryptionTabRef } from "./EncryptionTab";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface IDEInterfaceProps {
   user: string;
@@ -32,6 +34,8 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
   const [activeTab, setActiveTab] = useState("main.tsx");
   const [username, setUsername] = useState<string | null>(null);
   const { user: authUser } = useAuth();
+  const chatTabRef = useRef<ChatTabRef>(null);
+  const encryptionTabRef = useRef<EncryptionTabRef>(null);
 
   // Load username on mount
   useEffect(() => {
@@ -57,6 +61,25 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
       }
     } catch (error) {
       console.error('Error loading username:', error);
+    }
+  };
+
+  const handleSaveAll = async () => {
+    try {
+      // Clear console messages for the current user
+      if (chatTabRef.current) {
+        await chatTabRef.current.clearConsole();
+      }
+      
+      // Clear encryption data
+      if (encryptionTabRef.current) {
+        encryptionTabRef.current.clearAll();
+      }
+      
+      toast.success('All data cleared successfully');
+    } catch (error) {
+      console.error('Error clearing data:', error);
+      toast.error('Failed to clear all data');
     }
   };
 
@@ -105,6 +128,16 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
         <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-200 hover:bg-slate-700 text-xs whitespace-nowrap">
           <Settings className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
           <span className="hidden sm:inline">Settings</span>
+        </Button>
+        <div className="h-4 w-px bg-slate-600 mx-1 sm:mx-2" />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleSaveAll}
+          className="text-slate-400 hover:text-slate-200 hover:bg-slate-700 text-xs whitespace-nowrap"
+        >
+          <Save className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+          <span className="hidden sm:inline">Save All</span>
         </Button>
       </div>
 
@@ -261,10 +294,10 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
                 <PackageJsonViewer />
               </TabsContent>
               <div className={activeTab === "chat" ? "h-full" : "hidden h-full"}>
-                <ChatTab user={user} isActive={activeTab === "chat"} />
+                <ChatTab ref={chatTabRef} user={user} isActive={activeTab === "chat"} />
               </div>
               <div className={activeTab === "encryption" ? "h-full" : "hidden h-full"}>
-                <EncryptionTab />
+                <EncryptionTab ref={encryptionTabRef} />
               </div>
             </div>
           </Tabs>
