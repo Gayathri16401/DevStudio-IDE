@@ -24,23 +24,21 @@ export const DeleteMessageDialog = ({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader className="space-y-1">
-          <AlertDialogTitle className="text-base font-medium">Delete Message</AlertDialogTitle>
+          <AlertDialogTitle className="text-base font-medium">Remove Entry</AlertDialogTitle>
           <AlertDialogDescription className="text-xs text-slate-500">
-            Are you sure you want to delete this message? This action cannot be undone.
+            Confirm removal of this entry?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col sm:flex-row gap-2 mt-4">
           <AlertDialogCancel className="text-xs h-8">Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            className="bg-red-600 hover:bg-red-700 text-xs h-8"
+            className="bg-slate-600 hover:bg-slate-700 text-xs h-8"
           >
-            Delete Message
+            Confirm
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
 };
-
-// Made with Bob
