@@ -166,6 +166,14 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
     setTimeout(() => keyInputRef.current?.focus(), 0);
   };
 
+  const handleClearBoth = () => {
+    setMessage("");
+    setOutput("");
+    setErrorMessage("");
+    // Focus on message textarea after clearing both
+    setTimeout(() => messageTextareaRef.current?.focus(), 0);
+  };
+
   const handleClearOutput = () => {
     setOutput("");
     // Focus on output textarea after clearing
@@ -283,11 +291,11 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
                 CLR
               </Button>
               <Button
-                onClick={handleClearAll}
+                onClick={handleClearBoth}
                 variant="outline"
-                className="bg-red-700 hover:bg-red-600 text-red-200 border-red-600 h-7 sm:h-8 text-[10px] sm:text-xs w-full"
+                className="bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600 h-7 sm:h-8 text-[10px] sm:text-xs w-full"
               >
-                ALL
+                CLRB
               </Button>
             </div>
           </div>
@@ -318,11 +326,10 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
                 }`}
               />
             </div>
-            <div className="grid grid-cols-3 gap-1 sm:gap-2">
+            <div className="grid grid-cols-4 gap-1 sm:gap-2">
               <div className="flex items-center justify-center gap-1 bg-slate-700 border border-slate-600 rounded px-2 py-1 h-7 sm:h-8">
                 <Label className="text-slate-300 text-[10px] sm:text-xs whitespace-nowrap">
-                  <span className="sm:hidden">RST</span>
-                  <span className="hidden sm:inline">RST Timer (0-60 mins)</span>
+                  RST
                 </Label>
                 <input
                   type="number"
@@ -349,11 +356,11 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
                 )}
               </div>
               <Button
-                onClick={copyOutput}
-                disabled={!output}
-                className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full"
+                onClick={handleClearAll}
+                variant="outline"
+                className="bg-red-700 hover:bg-red-600 text-red-200 border-red-600 h-7 sm:h-8 text-[10px] sm:text-xs w-full"
               >
-                {copiedOutput ? 'COPIED!' : 'CPY'}
+                ALL
               </Button>
               <Button
                 onClick={handleClearOutput}
@@ -361,6 +368,13 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
                 className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full"
               >
                 CLR
+              </Button>
+              <Button
+                onClick={copyOutput}
+                disabled={!output}
+                className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full"
+              >
+                {copiedOutput ? 'COPIED!' : 'CPY'}
               </Button>
             </div>
           </div>
