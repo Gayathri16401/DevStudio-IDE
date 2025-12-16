@@ -9,15 +9,15 @@ import {
   Play,
   Square,
   Settings,
-  Terminal,
   MessageSquare,
   Lock,
-  Unlock,
   FolderOpen,
   FileText,
   Coffee
 } from "lucide-react";
 import CodeEditor from "./CodeEditor";
+import AppFileViewer from "./AppFileViewer";
+import PackageJsonViewer from "./PackageJsonViewer";
 import ChatTab from "./ChatTab";
 import EncryptionTab from "./EncryptionTab";
 import { useAuth } from "@/hooks/useAuth";
@@ -125,7 +125,7 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
               </div>
               <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm">
                 <FileText className="w-4 h-4 text-orange-400" />
-                <span>docker-compose.yml</span>
+                <span>index.html</span>
               </div>
               <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm">
                 <FileText className="w-4 h-4 text-yellow-400" />
@@ -148,12 +148,12 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
                 <span>public</span>
               </div>
               <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
-                <FileText className="w-4 h-4 text-orange-400" />
-                <span>index.html</span>
+                <FileText className="w-4 h-4 text-gray-400" />
+                <span>favicon.svg</span>
               </div>
               <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
                 <FileText className="w-4 h-4 text-gray-400" />
-                <span>favicon.ico</span>
+                <span>placeholder.svg</span>
               </div>
               <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm">
                 <Folder className="w-4 h-4 text-blue-400" />
@@ -216,8 +216,21 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
                 className="data-[state=active]:bg-slate-700 data-[state=active]:text-white rounded-none border-r border-slate-700 px-2 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap"
               >
                 <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">main.tsx</span>
-                <span className="sm:hidden">main.tsx</span>
+                main.tsx
+              </TabsTrigger>
+              <TabsTrigger
+                value="App.tsx"
+                className="data-[state=active]:bg-slate-700 data-[state=active]:text-white rounded-none border-r border-slate-700 px-2 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap"
+              >
+                <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                App.tsx
+              </TabsTrigger>
+              <TabsTrigger
+                value="package.json"
+                className="data-[state=active]:bg-slate-700 data-[state=active]:text-white rounded-none border-r border-slate-700 px-2 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap"
+              >
+                <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                package.json
               </TabsTrigger>
               <TabsTrigger
                 value="chat"
@@ -240,6 +253,12 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
             <div className="flex-1 overflow-hidden relative">
               <TabsContent value="main.tsx" className="h-full m-0">
                 <CodeEditor />
+              </TabsContent>
+              <TabsContent value="App.tsx" className="h-full m-0">
+                <AppFileViewer />
+              </TabsContent>
+              <TabsContent value="package.json" className="h-full m-0">
+                <PackageJsonViewer />
               </TabsContent>
               <div className={activeTab === "chat" ? "h-full" : "hidden h-full"}>
                 <ChatTab user={user} isActive={activeTab === "chat"} />
