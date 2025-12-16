@@ -479,12 +479,12 @@ const ChatTab = ({ user, isActive = true }: ChatTabProps) => {
                             <span className={`${isCurrentUser ? "text-green-400" : "text-blue-400"} inline-block w-[32px]`}>
                               {isCurrentUser ? "DEBUG" : "INFO"}
                             </span>
-                            {/* Show acknowledgement field for all messages */}
-                            <div className={`min-w-[20px] max-w-[100px] bg-[#1a1a1a] border rounded px-1.5 py-0.5 text-[9px] transition-all whitespace-nowrap overflow-hidden ${
+                            {/* Show acknowledgement field only on hover */}
+                            <div className={`min-w-[20px] max-w-[100px] bg-[#1a1a1a] border rounded px-1.5 py-0.5 text-[9px] transition-all whitespace-nowrap overflow-hidden opacity-0 group-hover:opacity-100 ${
                               isCurrentUser
                                 ? 'border-green-700/40 text-green-400/70 hover:border-green-600/60 focus:border-green-500 focus:text-green-400'
                                 : 'border-blue-700/40 text-blue-400/70 cursor-text hover:border-blue-600/60 focus:border-blue-500 focus:text-blue-400'
-                            } ${!isCurrentUser ? 'focus:bg-[#252525]' : ''} ${log.acknowledgement ? '' : 'opacity-60'}`}
+                            } ${!isCurrentUser ? 'focus:bg-[#252525]' : ''}`}
                                  contentEditable={!isCurrentUser}
                                  suppressContentEditableWarning={true}
                                  title={isCurrentUser ? "Acknowledgement (read-only)" : "Acknowledgement"}
