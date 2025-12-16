@@ -29,7 +29,7 @@ interface IDEInterfaceProps {
 }
 
 const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
-  const [activeTab, setActiveTab] = useState("main.js");
+  const [activeTab, setActiveTab] = useState("main.tsx");
   const [username, setUsername] = useState<string | null>(null);
   const { user: authUser } = useAuth();
 
@@ -168,6 +168,10 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
                 <span>App.tsx</span>
               </div>
               <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
+                <FileText className="w-4 h-4 text-blue-400" />
+                <span>main.tsx</span>
+              </div>
+              <div className="flex items-center space-x-2 px-2 py-1 hover:bg-slate-700 rounded text-sm ml-4">
                 <Folder className="w-4 h-4 text-blue-400" />
                 <span>api</span>
               </div>
@@ -208,12 +212,12 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
             <TabsList className="bg-slate-800 border-b border-slate-700 justify-start rounded-none h-auto p-0 overflow-x-auto flex-nowrap">
               <TabsTrigger
-                value="main.js"
+                value="main.tsx"
                 className="data-[state=active]:bg-slate-700 data-[state=active]:text-white rounded-none border-r border-slate-700 px-2 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap"
               >
                 <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">main.js</span>
-                <span className="sm:hidden">Code</span>
+                <span className="hidden sm:inline">main.tsx</span>
+                <span className="sm:hidden">main.tsx</span>
               </TabsTrigger>
               <TabsTrigger
                 value="chat"
@@ -234,7 +238,7 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
             </TabsList>
 
             <div className="flex-1 overflow-hidden relative">
-              <TabsContent value="main.js" className="h-full m-0">
+              <TabsContent value="main.tsx" className="h-full m-0">
                 <CodeEditor />
               </TabsContent>
               <div className={activeTab === "chat" ? "h-full" : "hidden h-full"}>
