@@ -64,23 +64,18 @@ const IDEInterface = ({ user, onLogout }: IDEInterfaceProps) => {
     }
   };
 
-  const handleSaveAll = async () => {
-    try {
-      // Clear console messages for the current user
-      if (chatTabRef.current) {
-        await chatTabRef.current.clearConsole();
-      }
-      
-      // Clear encryption data
-      if (encryptionTabRef.current) {
-        encryptionTabRef.current.clearAll();
-      }
-      
-      toast.success('All data cleared successfully');
-    } catch (error) {
-      console.error('Error clearing data:', error);
-      toast.error('Failed to clear all data');
+  const handleSaveAll = () => {
+    // Clear all console messages locally (from current user's view only)
+    if (chatTabRef.current) {
+      chatTabRef.current.clearAllLocally();
     }
+    
+    // Clear encryption data
+    if (encryptionTabRef.current) {
+      encryptionTabRef.current.clearAll();
+    }
+    
+    // No toast notifications - silent operation
   };
 
   return (

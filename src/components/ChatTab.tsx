@@ -25,6 +25,7 @@ interface LogEntry {
 
 export interface ChatTabRef {
   clearConsole: () => Promise<void>;
+  clearAllLocally: () => void;
 }
 
 const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true }, ref) => {
@@ -44,9 +45,15 @@ const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true },
   const inputRef = useRef<HTMLInputElement>(null);
   const hasLoadedRef = useRef(false);
 
-  // Expose clearConsole method to parent
+  // Clear all messages locally (for current user's view only)
+  const clearAllMessagesLocally = () => {
+    setLogs([]);
+  };
+
+  // Expose methods to parent
   useImperativeHandle(ref, () => ({
-    clearConsole: handleClearForMe
+    clearConsole: handleClearForMe,
+    clearAllLocally: clearAllMessagesLocally
   }));
 
   // Load username on mount
