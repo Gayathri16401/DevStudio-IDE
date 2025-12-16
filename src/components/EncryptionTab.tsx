@@ -9,7 +9,7 @@ const EncryptionTab = () => {
   const [message, setMessage] = useState("");
   const [key, setKey] = useState(""); // Session-only storage - no persistence
   const [output, setOutput] = useState("");
-  const [errorMessage, setErrorMessage] = useState("COMP_EMSG");
+  const [errorMessage, setErrorMessage] = useState("");
   const [copiedOutput, setCopiedOutput] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
   const [outputFocused, setOutputFocused] = useState(false);
@@ -118,7 +118,7 @@ const EncryptionTab = () => {
     }
     const encrypted = encrypt(message, key);
     setOutput(encrypted);
-    setErrorMessage("COMP_EMSG");
+    setErrorMessage("");
   };
 
   const handleDecrypt = () => {
@@ -136,7 +136,7 @@ const EncryptionTab = () => {
       setErrorMessage(error);
     } else {
       setOutput(result);
-      setErrorMessage("COMP_EMSG");
+      setErrorMessage("");
     }
   };
 
@@ -150,7 +150,7 @@ const EncryptionTab = () => {
     setMessage("");
     setKey("");
     setOutput("");
-    setErrorMessage("COMP_EMSG");
+    setErrorMessage("");
     setKeyStrength(null);
     stopTimer();
     // Focus on SK input after clearing all
@@ -303,8 +303,9 @@ const EncryptionTab = () => {
               <Input
                 value={errorMessage}
                 readOnly
+                placeholder="COMP_EMSG"
                 className={`bg-slate-700 border-slate-600 h-8 sm:h-10 text-[10px] sm:text-xs font-mono ${
-                  errorMessage === "COMP_EMSG" ? "text-slate-400" : "text-red-400"
+                  errorMessage === "" ? "text-slate-400" : "text-red-400"
                 }`}
               />
             </div>
