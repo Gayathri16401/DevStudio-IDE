@@ -327,6 +327,27 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
               />
             </div>
             <div className="grid grid-cols-4 gap-1 sm:gap-2">
+              <Button
+                onClick={copyOutput}
+                disabled={!output}
+                className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full"
+              >
+                {copiedOutput ? 'COPIED!' : 'CPY'}
+              </Button>
+              <Button
+                onClick={handleClearOutput}
+                disabled={!output}
+                className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full"
+              >
+                CLR
+              </Button>
+              <Button
+                onClick={handleClearAll}
+                variant="outline"
+                className="bg-red-700 hover:bg-red-600 text-red-200 border-red-600 h-7 sm:h-8 text-[10px] sm:text-xs w-full"
+              >
+                CLRA
+              </Button>
               <div className="flex items-center justify-center gap-1 bg-slate-700 border border-slate-600 rounded px-2 py-1 h-7 sm:h-8">
                 <Label className="text-slate-300 text-[10px] sm:text-xs whitespace-nowrap">
                   RST
@@ -355,27 +376,6 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
                   </span>
                 )}
               </div>
-              <Button
-                onClick={handleClearAll}
-                variant="outline"
-                className="bg-red-700 hover:bg-red-600 text-red-200 border-red-600 h-7 sm:h-8 text-[10px] sm:text-xs w-full"
-              >
-                ALL
-              </Button>
-              <Button
-                onClick={handleClearOutput}
-                disabled={!output}
-                className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full"
-              >
-                CLR
-              </Button>
-              <Button
-                onClick={copyOutput}
-                disabled={!output}
-                className="bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-8 text-[10px] sm:text-xs w-full"
-              >
-                {copiedOutput ? 'COPIED!' : 'CPY'}
-              </Button>
             </div>
           </div>
         </div>
