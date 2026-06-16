@@ -198,6 +198,16 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() && authUser && username) {
+      // Check if ANY message (from any user) matches the new message
+      const duplicateMessage = messages
+        .filter(msg => msg.message_type === 'message')
+        .find(msg => msg.content.trim() === newMessage.trim());
+      
+      if (duplicateMessage) {
+        toast.error('Entry rejected: duplicate detected');
+        return;
+      }
+
       try {
         const { error } = await supabase
           .from('console_messages')
@@ -213,7 +223,7 @@ const NormalChat = ({ user, onLogout }: NormalChatProps) => {
         setNewMessage("");
       } catch (error) {
         console.error('Error sending message:', error);
-        toast.error('Failed to send message');
+        toast.error('Operation failed');
       }
     }
   };
