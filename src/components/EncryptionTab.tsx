@@ -235,13 +235,13 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
   };
 
   return (
-    <div className="h-full bg-slate-900 p-3 sm:p-6 overflow-auto flex flex-col">
+    <div className="h-full dark:bg-slate-900 bg-gray-50 p-3 sm:p-6 overflow-auto flex flex-col">
       {/* Main Layout: Input | Output */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
           {/* Left: Input Section */}
           <div className="flex flex-col h-full space-y-2 sm:space-y-3 min-h-[300px] lg:min-h-0">
             <div className="flex-1 flex flex-col space-y-2">
-              <Label className="text-slate-300 text-[10px] sm:text-xs">Paste (or write) text content</Label>
+              <Label className="dark:text-slate-300 text-gray-700 text-[10px] sm:text-xs">Paste (or write) text content</Label>
               <Textarea
                 ref={messageTextareaRef}
                 value={message}
@@ -249,7 +249,7 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
                 placeholder="Enter data..."
-                className={`bg-slate-700 border-slate-600 text-slate-100 flex-1 text-[10px] sm:text-xs resize-none transition-all min-h-[120px] ${
+                className={`dark:bg-slate-700 bg-white dark:border-slate-600 border-gray-300 dark:text-slate-100 text-gray-900 flex-1 text-[10px] sm:text-xs resize-none transition-all min-h-[120px] ${
                   !inputFocused && message ? 'blur-sm' : ''
                 }`}
               />
@@ -261,7 +261,7 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
                 value={key}
                 placeholder="SK"
                 onChange={(e) => handleKeyChange(e.target.value)}
-                className={`bg-slate-700 border-slate-600 text-slate-100 h-8 sm:h-10 text-[10px] sm:text-xs font-mono ${
+                className={`dark:bg-slate-700 bg-white dark:border-slate-600 border-gray-300 dark:text-slate-100 text-gray-900 h-8 sm:h-10 text-[10px] sm:text-xs font-mono ${
                   keyStrength === "weak" ? "border-red-500" :
                   keyStrength === "medium" ? "border-yellow-500" :
                   keyStrength === "strong" ? "border-green-500" : ""
@@ -286,14 +286,14 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
               <Button
                 onClick={handleClear}
                 variant="outline"
-                className="bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600 h-7 sm:h-8 text-[10px] sm:text-xs w-full"
+                className="dark:bg-slate-700 bg-gray-200 dark:hover:bg-slate-600 hover:bg-gray-300 dark:text-slate-300 text-gray-700 dark:border-slate-600 border-gray-400 h-7 sm:h-8 text-[10px] sm:text-xs w-full"
               >
                 CLR
               </Button>
               <Button
                 onClick={handleClearBoth}
                 variant="outline"
-                className="bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600 h-7 sm:h-8 text-[10px] sm:text-xs w-full"
+                className="dark:bg-slate-700 bg-gray-200 dark:hover:bg-slate-600 hover:bg-gray-300 dark:text-slate-300 text-gray-700 dark:border-slate-600 border-gray-400 h-7 sm:h-8 text-[10px] sm:text-xs w-full"
               >
                 CLRB
               </Button>
@@ -303,7 +303,7 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
           {/* Right: Output Section */}
           <div className="flex flex-col h-full space-y-2 sm:space-y-3 min-h-[300px] lg:min-h-0">
             <div className="flex-1 flex flex-col space-y-2">
-              <Label className="text-slate-300 text-[10px] sm:text-xs">Computational Result</Label>
+              <Label className="dark:text-slate-300 text-gray-700 text-[10px] sm:text-xs">Computational Result</Label>
               <Textarea
                 ref={outputTextareaRef}
                 value={output}
@@ -311,7 +311,7 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
                 onFocus={() => setOutputFocused(true)}
                 onBlur={() => setOutputFocused(false)}
                 placeholder=""
-                className={`bg-slate-700 border-slate-600 text-green-400 font-mono text-[10px] sm:text-[11px] flex-1 resize-none transition-all min-h-[120px] ${
+                className={`dark:bg-slate-700 bg-white dark:border-slate-600 border-gray-300 text-green-600 font-mono text-[10px] sm:text-[11px] flex-1 resize-none transition-all min-h-[120px] ${
                   !outputFocused && output ? 'blur-sm' : ''
                 }`}
               />
@@ -321,8 +321,8 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
                 value={errorMessage}
                 readOnly
                 placeholder="COMP_EMSG"
-                className={`bg-slate-700 border-slate-600 h-8 sm:h-10 text-[10px] sm:text-xs font-mono ${
-                  errorMessage === "" ? "text-slate-400" : "text-red-400"
+                className={`dark:bg-slate-700 bg-white dark:border-slate-600 border-gray-300 h-8 sm:h-10 text-[10px] sm:text-xs font-mono ${
+                  errorMessage === "" ? "dark:text-slate-400 text-gray-400" : "text-red-500"
                 }`}
               />
             </div>
@@ -348,8 +348,8 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
               >
                 CLRA
               </Button>
-              <div className="flex items-center justify-center gap-1 bg-slate-700 border border-slate-600 rounded px-2 py-1 h-7 sm:h-8">
-                <Label className="text-slate-300 text-[10px] sm:text-xs whitespace-nowrap">
+              <div className="flex items-center justify-center gap-1 dark:bg-slate-700 bg-gray-200 border dark:border-slate-600 border-gray-400 rounded px-2 py-1 h-7 sm:h-8">
+                <Label className="dark:text-slate-300 text-gray-700 text-[10px] sm:text-xs whitespace-nowrap">
                   RST
                 </Label>
                 <input
@@ -368,7 +368,7 @@ const EncryptionTab = forwardRef<EncryptionTabRef, {}>((props, ref) => {
                       stopTimer();
                     }
                   }}
-                  className="bg-slate-800 border border-slate-500 rounded text-slate-100 h-5 sm:h-6 text-[10px] sm:text-xs w-8 sm:w-10 px-1 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="dark:bg-slate-800 bg-white border dark:border-slate-500 border-gray-400 rounded dark:text-slate-100 text-gray-900 h-5 sm:h-6 text-[10px] sm:text-xs w-8 sm:w-10 px-1 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 {isTimerActive && remainingTime > 0 && (
                   <span className="text-green-400 text-[10px] sm:text-xs font-mono whitespace-nowrap">

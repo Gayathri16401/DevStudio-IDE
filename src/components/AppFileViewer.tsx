@@ -61,26 +61,26 @@ const App: React.FC = () => {
 export default App;`;
 
   return (
-    <div className="h-full flex flex-col bg-slate-900">
-      <div className="flex items-center justify-between p-2 border-b border-slate-700">
+    <div className="h-full flex flex-col dark:bg-slate-900 bg-gray-50">
+      <div className="flex items-center justify-between p-2 border-b dark:border-slate-700 border-gray-300">
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-200 hover:bg-slate-700">
+          <Button variant="ghost" size="sm" className="dark:text-slate-400 text-gray-600 dark:hover:text-slate-200 hover:text-gray-900 dark:hover:bg-slate-700 hover:bg-gray-200">
             <Save className="w-4 h-4 mr-1" />
             Save
           </Button>
-          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-200 hover:bg-slate-700">
+          <Button variant="ghost" size="sm" className="dark:text-slate-400 text-gray-600 dark:hover:text-slate-200 hover:text-gray-900 dark:hover:bg-slate-700 hover:bg-gray-200">
             <Play className="w-4 h-4 mr-1" />
             Run
           </Button>
         </div>
-        <div className="text-xs text-slate-500">
+        <div className="text-xs dark:text-slate-500 text-gray-500">
           App.tsx • Modified
         </div>
       </div>
       
       <div className="flex-1 flex">
         {/* Line numbers */}
-        <div className="bg-slate-800 text-slate-500 text-sm font-mono p-4 pr-2 select-none border-r border-slate-700">
+        <div className="dark:bg-slate-800 bg-gray-100 dark:text-slate-500 text-gray-600 text-sm font-mono p-4 pr-2 select-none border-r dark:border-slate-700 border-gray-300">
           {code.split('\n').map((_, index) => (
             <div key={index} className="leading-6">
               {index + 1}
@@ -90,7 +90,7 @@ export default App;`;
         
         {/* Code content */}
         <div className="flex-1 overflow-auto">
-          <pre className="text-sm font-mono p-4 leading-6 text-slate-100 whitespace-pre">
+          <pre className="text-sm font-mono p-4 leading-6 dark:text-slate-100 text-gray-900 whitespace-pre">
             {code}
           </pre>
         </div>

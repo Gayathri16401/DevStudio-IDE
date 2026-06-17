@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Send, Terminal, Trash2, Copy, Edit2, Check, X, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { ClearConsoleDialog } from "./ClearConsoleDialog";
 import { DeleteMessageDialog } from "./DeleteMessageDialog";
@@ -442,14 +443,14 @@ const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true },
         onConfirm={confirmDeleteMessage}
       />
       
-      <div className="h-full flex flex-col bg-black relative">
+      <div className="h-full flex flex-col dark:bg-black bg-white relative">
         {/* Terminal Header - looks like VS Code terminal */}
-        <div className="relative flex items-center justify-between px-2 sm:px-3 py-1.5 bg-[#1e1e1e] border-b border-[#2d2d2d]">
+        <div className="relative flex items-center justify-between px-2 sm:px-3 py-1.5 dark:bg-[#1e1e1e] bg-gray-100 border-b dark:border-[#2d2d2d] border-gray-300">
         <div className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto">
-          <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-500 flex-shrink-0" />
-          <span className="text-[10px] sm:text-xs text-gray-400 font-mono whitespace-nowrap">bash</span>
-          <span className="text-[10px] sm:text-xs text-gray-600 hidden sm:inline">•</span>
-          <span className="text-[10px] sm:text-xs text-gray-500 font-mono whitespace-nowrap hidden sm:inline">node v18.17.0</span>
+          <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 dark:text-gray-500 text-gray-600 flex-shrink-0" />
+          <span className="text-[10px] sm:text-xs dark:text-gray-400 text-gray-700 font-mono whitespace-nowrap">bash</span>
+          <span className="text-[10px] sm:text-xs dark:text-gray-600 text-gray-400 hidden sm:inline">•</span>
+          <span className="text-[10px] sm:text-xs dark:text-gray-500 text-gray-600 font-mono whitespace-nowrap hidden sm:inline">node v18.17.0</span>
         </div>
         <div className="flex items-center space-x-1">
           <Button
@@ -457,7 +458,7 @@ const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true },
             disabled={refreshing}
             size="sm"
             variant="ghost"
-            className="text-gray-500 hover:text-gray-300 hover:bg-[#2d2d2d] h-5 sm:h-6 px-1 sm:px-2 transition-colors flex-shrink-0"
+            className="dark:text-gray-500 text-gray-600 dark:hover:text-gray-300 hover:text-gray-800 dark:hover:bg-[#2d2d2d] hover:bg-gray-200 h-5 sm:h-6 px-1 sm:px-2 transition-colors flex-shrink-0"
             title="Refresh console"
           >
             <RefreshCw className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${refreshing ? 'animate-spin' : ''}`} />
@@ -466,7 +467,7 @@ const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true },
             onClick={() => setShowClearDialog(true)}
             size="sm"
             variant="ghost"
-            className="text-gray-500 hover:text-gray-300 hover:bg-[#2d2d2d] h-5 sm:h-6 px-1 sm:px-2 transition-colors flex-shrink-0"
+            className="dark:text-gray-500 text-gray-600 dark:hover:text-gray-300 hover:text-gray-800 dark:hover:bg-[#2d2d2d] hover:bg-gray-200 h-5 sm:h-6 px-1 sm:px-2 transition-colors flex-shrink-0"
           >
             <Trash2 className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
           </Button>
@@ -474,16 +475,16 @@ const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true },
       </div>
       
         {/* Terminal Console Area - authentic terminal look */}
-        <div ref={consoleRef} className="p-2 sm:p-3 bg-black overflow-y-auto terminal-scrollbar" style={{ height: 'calc(100vh - 200px)' }}>
+        <div ref={consoleRef} className="p-2 sm:p-3 dark:bg-black bg-white overflow-y-auto terminal-scrollbar" style={{ height: 'calc(100vh - 200px)' }}>
           {loading ? (
-            <div className="text-gray-500 text-[10px] sm:text-xs font-mono">
-              <span className="text-green-400">✓</span> Loading workspace...
+            <div className="dark:text-gray-500 text-gray-600 text-[10px] sm:text-xs font-mono">
+              <span className="dark:text-green-400 text-green-600">✓</span> Loading workspace...
             </div>
           ) : logs.length === 0 ? (
-            <div className="text-gray-600 text-[10px] sm:text-xs font-mono space-y-1">
-              <div><span className="text-blue-400">info</span> Development server running</div>
-              <div><span className="text-green-400">ready</span> Compiled successfully</div>
-              <div className="text-gray-700 mt-2">Waiting for file changes...</div>
+            <div className="dark:text-gray-600 text-gray-700 text-[10px] sm:text-xs font-mono space-y-1">
+              <div><span className="dark:text-blue-400 text-blue-600">info</span> Development server running</div>
+              <div><span className="dark:text-green-400 text-green-600">ready</span> Compiled successfully</div>
+              <div className="dark:text-gray-700 text-gray-500 mt-2">Waiting for file changes...</div>
             </div>
           ) : (
             <div className="space-y-0 font-mono text-[10px] sm:text-xs leading-relaxed">
@@ -495,22 +496,22 @@ const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true },
                     {log.message_type === 'message' ? (
                       <div className="group mb-3">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 text-gray-600">
-                            <span className="text-gray-700">
+                          <div className="flex items-center gap-2 dark:text-gray-600 text-gray-700">
+                            <span className="dark:text-gray-700 text-gray-500">
                               [{formatDateTime(log.created_at)}]
                             </span>
-                            <span className={isCurrentUser ? "text-green-400" : "text-blue-400"}>
+                            <span className={isCurrentUser ? "dark:text-green-400 text-green-600" : "dark:text-blue-400 text-blue-600"}>
                               {isCurrentUser ? "►" : "◄"}
                             </span>
-                            <span className={`${isCurrentUser ? "text-green-400" : "text-blue-400"} inline-block w-[32px]`}>
+                            <span className={`${isCurrentUser ? "dark:text-green-400 text-green-600" : "dark:text-blue-400 text-blue-600"} inline-block w-[32px]`}>
                               {isCurrentUser ? "DEBUG" : "INFO"}
                             </span>
                             {/* Show acknowledgement field only on hover */}
-                            <div className={`min-w-[20px] max-w-[100px] bg-[#1a1a1a] border rounded px-1.5 py-0.5 text-[9px] transition-all whitespace-nowrap overflow-hidden opacity-0 group-hover:opacity-100 ${
+                            <div className={`min-w-[20px] max-w-[100px] dark:bg-[#1a1a1a] bg-gray-100 border rounded px-1.5 py-0.5 text-[9px] transition-all whitespace-nowrap overflow-hidden opacity-0 group-hover:opacity-100 ${
                               isCurrentUser
-                                ? 'border-green-700/40 text-green-400/70 hover:border-green-600/60 focus:border-green-500 focus:text-green-400'
-                                : 'border-blue-700/40 text-blue-400/70 cursor-text hover:border-blue-600/60 focus:border-blue-500 focus:text-blue-400'
-                            } ${!isCurrentUser ? 'focus:bg-[#252525]' : ''}`}
+                                ? 'dark:border-green-700/40 border-green-300 dark:text-green-400/70 text-green-700 dark:hover:border-green-600/60 hover:border-green-400 dark:focus:border-green-500 focus:border-green-500 dark:focus:text-green-400 focus:text-green-700'
+                                : 'dark:border-blue-700/40 border-blue-300 dark:text-blue-400/70 text-blue-700 cursor-text dark:hover:border-blue-600/60 hover:border-blue-400 dark:focus:border-blue-500 focus:border-blue-500 dark:focus:text-blue-400 focus:text-blue-700'
+                            } ${!isCurrentUser ? 'dark:focus:bg-[#252525] focus:bg-gray-200' : ''}`}
                                  contentEditable={!isCurrentUser}
                                  suppressContentEditableWarning={true}
                                  title={isCurrentUser ? "Acknowledgement (read-only)" : "Acknowledgement"}
@@ -560,7 +561,7 @@ const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true },
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleDeleteClick(log.id)}
-                                  className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 hover:bg-[#2d2d2d] h-5 w-5 p-0 transition-opacity"
+                                  className="opacity-0 group-hover:opacity-100 dark:text-gray-500 text-gray-600 hover:text-red-500 dark:hover:bg-[#2d2d2d] hover:bg-gray-200 h-5 w-5 p-0 transition-opacity"
                                   title="Delete message"
                                 >
                                   <Trash2 className="w-2.5 h-2.5" />
@@ -571,7 +572,7 @@ const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true },
                               variant="ghost"
                               size="sm"
                               onClick={() => copyMessage(log.content, log.id)}
-                              className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-gray-300 hover:bg-[#2d2d2d] h-5 w-5 p-0 transition-opacity"
+                              className="opacity-0 group-hover:opacity-100 dark:text-gray-500 text-gray-600 dark:hover:text-gray-300 hover:text-gray-800 dark:hover:bg-[#2d2d2d] hover:bg-gray-200 h-5 w-5 p-0 transition-opacity"
                               title="Copy message"
                             >
                               {copiedMessageId === log.id ? (
@@ -587,7 +588,7 @@ const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true },
                             <Input
                               value={editedContent}
                               onChange={(e) => setEditedContent(e.target.value)}
-                              className="flex-1 bg-[#1e1e1e] border-gray-700 text-gray-300 font-mono text-[10px] sm:text-xs h-6 sm:h-7"
+                              className="flex-1 dark:bg-[#1e1e1e] bg-white dark:border-gray-700 border-gray-300 dark:text-gray-300 text-gray-900 font-mono text-[10px] sm:text-xs h-6 sm:h-7"
                               autoFocus
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
@@ -601,7 +602,7 @@ const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true },
                               variant="ghost"
                               size="sm"
                               onClick={() => saveEdit(log.id)}
-                              className="text-green-400 hover:text-green-300 hover:bg-[#2d2d2d] h-6 w-6 p-0"
+                              className="dark:text-green-400 text-green-600 dark:hover:text-green-300 hover:text-green-700 dark:hover:bg-[#2d2d2d] hover:bg-gray-200 h-6 w-6 p-0"
                               title="Save"
                             >
                               <Check className="w-3 h-3" />
@@ -610,21 +611,21 @@ const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true },
                               variant="ghost"
                               size="sm"
                               onClick={cancelEditing}
-                              className="text-red-400 hover:text-red-300 hover:bg-[#2d2d2d] h-6 w-6 p-0"
+                              className="dark:text-red-400 text-red-600 dark:hover:text-red-300 hover:text-red-700 dark:hover:bg-[#2d2d2d] hover:bg-gray-200 h-6 w-6 p-0"
                               title="Cancel"
                             >
                               <X className="w-3 h-3" />
                             </Button>
                           </div>
                         ) : (
-                          <div className="text-gray-300 break-all overflow-wrap-anywhere mt-0.5">
+                          <div className="dark:text-gray-300 text-gray-800 break-all overflow-wrap-anywhere mt-0.5">
                             {log.content}
                           </div>
                         )}
                       </div>
                     ) : (
-                      <div className="text-green-400 break-words text-[10px] sm:text-xs">
-                        <span className="text-gray-600">›</span> {log.content}
+                      <div className="dark:text-green-400 text-green-600 break-words text-[10px] sm:text-xs">
+                        <span className="dark:text-gray-600 text-gray-500">›</span> {log.content}
                       </div>
                     )}
                   </div>
@@ -635,15 +636,15 @@ const ChatTab = forwardRef<ChatTabRef, ChatTabProps>(({ user, isActive = true },
         </div>
       
         {/* Terminal Input Area - command prompt style */}
-        <div className="border-t border-[#2d2d2d] p-1 bg-[#1e1e1e]">
+        <div className="border-t dark:border-[#2d2d2d] border-gray-300 p-1 dark:bg-[#1e1e1e] bg-gray-100">
           <form onSubmit={handleSend} className="flex items-center space-x-1 sm:space-x-2">
-            <span className="text-green-400 font-mono text-xs sm:text-sm font-bold select-none">❯</span>
+            <span className="dark:text-green-400 text-green-600 font-mono text-xs sm:text-sm font-bold select-none">❯</span>
             <Input
               ref={inputRef}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="npm run dev"
-              className="flex-1 bg-black border-none text-gray-300 font-mono text-[10px] sm:text-xs h-6 sm:h-7 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-700 px-1 sm:px-2"
+              className="flex-1 dark:bg-black bg-white border-none dark:text-gray-300 text-gray-900 font-mono text-[10px] sm:text-xs h-6 sm:h-7 focus-visible:ring-0 focus-visible:ring-offset-0 dark:placeholder:text-gray-700 placeholder:text-gray-400 px-1 sm:px-2"
             />
             <Button
               type="submit"

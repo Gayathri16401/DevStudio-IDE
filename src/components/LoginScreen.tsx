@@ -8,6 +8,7 @@ import { MessageCircle, Code2, Mail, Lock, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface LoginScreenProps {
   onModeSelect: (mode: "normal" | "hard") => void;
@@ -91,38 +92,43 @@ const LoginScreen = ({ onModeSelect }: LoginScreenProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-slate-800/90 border-slate-700 backdrop-blur-sm">
+    <div className="min-h-screen bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center p-4 relative">
+      {/* Theme Toggle in top-right corner */}
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+      
+      <Card className="w-full max-w-md dark:bg-slate-800/90 bg-white/90 dark:border-slate-700 border-gray-300 backdrop-blur-sm">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg w-16 h-16 flex items-center justify-center">
             <Code2 className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold text-white">DevStudio</CardTitle>
-          <CardDescription className="text-slate-300">
+          <CardTitle className="text-2xl font-bold dark:text-white text-gray-900">DevStudio</CardTitle>
+          <CardDescription className="dark:text-slate-300 text-gray-600">
             Professional Development Environment
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
-            <Label className="text-slate-200 text-sm font-medium">Workspace Mode</Label>
+            <Label className="dark:text-slate-200 text-gray-700 text-sm font-medium">Workspace Mode</Label>
             <RadioGroup value={mode} onValueChange={(value: "normal" | "hard") => setMode(value)}>
-              <div className="flex items-center space-x-3 p-3 rounded-lg border border-slate-600 bg-slate-700/50 hover:bg-slate-700 transition-colors">
+              <div className="flex items-center space-x-3 p-3 rounded-lg border dark:border-slate-600 border-gray-300 dark:bg-slate-700/50 bg-gray-50 dark:hover:bg-slate-700 hover:bg-gray-100 transition-colors">
                 <RadioGroupItem value="normal" id="normal" />
                 <Label htmlFor="normal" className="flex items-center space-x-2 cursor-pointer flex-1">
-                  <MessageCircle className="w-4 h-4 text-blue-400" />
+                  <MessageCircle className="w-4 h-4 dark:text-blue-400 text-blue-600" />
                   <div>
-                    <div className="text-white font-medium">Standard Workspace</div>
-                    <div className="text-slate-400 text-sm">Clean interface for development</div>
+                    <div className="dark:text-white text-gray-900 font-medium">Standard Workspace</div>
+                    <div className="dark:text-slate-400 text-gray-600 text-sm">Clean interface for development</div>
                   </div>
                 </Label>
               </div>
-              <div className="flex items-center space-x-3 p-3 rounded-lg border border-slate-600 bg-slate-700/50 hover:bg-slate-700 transition-colors">
+              <div className="flex items-center space-x-3 p-3 rounded-lg border dark:border-slate-600 border-gray-300 dark:bg-slate-700/50 bg-gray-50 dark:hover:bg-slate-700 hover:bg-gray-100 transition-colors">
                 <RadioGroupItem value="hard" id="hard" />
                 <Label htmlFor="hard" className="flex items-center space-x-2 cursor-pointer flex-1">
-                  <Code2 className="w-4 h-4 text-green-400" />
+                  <Code2 className="w-4 h-4 dark:text-green-400 text-green-600" />
                   <div>
-                    <div className="text-white font-medium">Advanced Workspace</div>
-                    <div className="text-slate-400 text-sm">Full IDE with advanced tools</div>
+                    <div className="dark:text-white text-gray-900 font-medium">Advanced Workspace</div>
+                    <div className="dark:text-slate-400 text-gray-600 text-sm">Full IDE with advanced tools</div>
                   </div>
                 </Label>
               </div>
@@ -131,16 +137,16 @@ const LoginScreen = ({ onModeSelect }: LoginScreenProps) => {
 
           <form onSubmit={handleAuth} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-200">Email</Label>
+              <Label htmlFor="email" className="dark:text-slate-200 text-gray-700">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                <Mail className="absolute left-3 top-3 h-4 w-4 dark:text-slate-400 text-gray-500" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                  className="pl-10 dark:bg-slate-700 bg-white dark:border-slate-600 border-gray-300 dark:text-white text-gray-900 dark:placeholder:text-slate-400 placeholder:text-gray-400"
                   required
                 />
               </div>
@@ -148,16 +154,16 @@ const LoginScreen = ({ onModeSelect }: LoginScreenProps) => {
 
             {isSignUp && (
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-slate-200">Username</Label>
+                <Label htmlFor="username" className="dark:text-slate-200 text-gray-700">Username</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <User className="absolute left-3 top-3 h-4 w-4 dark:text-slate-400 text-gray-500" />
                   <Input
                     id="username"
                     type="text"
                     placeholder="Choose a username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="pl-10 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                    className="pl-10 dark:bg-slate-700 bg-white dark:border-slate-600 border-gray-300 dark:text-white text-gray-900 dark:placeholder:text-slate-400 placeholder:text-gray-400"
                     maxLength={20}
                     required={isSignUp}
                   />
@@ -166,16 +172,16 @@ const LoginScreen = ({ onModeSelect }: LoginScreenProps) => {
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-slate-200">Password</Label>
+              <Label htmlFor="password" className="dark:text-slate-200 text-gray-700">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 dark:text-slate-400 text-gray-500" />
                 <Input
                   id="password"
                   type="password"
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                  className="pl-10 dark:bg-slate-700 bg-white dark:border-slate-600 border-gray-300 dark:text-white text-gray-900 dark:placeholder:text-slate-400 placeholder:text-gray-400"
                   required
                 />
               </div>
@@ -195,7 +201,7 @@ const LoginScreen = ({ onModeSelect }: LoginScreenProps) => {
                 variant="ghost" 
                 size="sm" 
                 onClick={() => setIsSignUp(!isSignUp)}
-                className="text-slate-400 hover:text-blue-400 hover:bg-slate-700/50"
+                className="dark:text-slate-400 text-gray-600 dark:hover:text-blue-400 hover:text-blue-600 dark:hover:bg-slate-700/50 hover:bg-gray-100"
               >
                 {isSignUp ? "Already have an account? Sign in" : "Need an account? Sign up"}
               </Button>
